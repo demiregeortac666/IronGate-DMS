@@ -1,0 +1,71 @@
+﻿@model DormitoryManagementSystem.Models.DashboardVM
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row">
+    <!-- Total Rooms -->
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Rooms</h5>
+                <h2>@Model.TotalRooms</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Students -->
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Total Students</h5>
+                <h2>@Model.TotalStudents</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Occupancy -->
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Occupancy</h5>
+                <h2>@Model.OccupiedBeds / @Model.TotalBeds</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Maintenance Requests -->
+    <div class="col-md-3 mb-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Open Requests</h5>
+                <h2>@Model.OpenMaintenanceRequests</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <!-- Total Paid -->
+    <div class="col-md-6 mb-3">
+        <div class="card border-success">
+            <div class="card-body">
+                <h5 class="card-title text-success">Total Paid</h5>
+                <h3>@Model.TotalPaid.ToString("C2")</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Unpaid -->
+    <div class="col-md-6 mb-3">
+        <div class="card border-danger">
+            <div class="card-body">
+                <h5 class="card-title text-danger">Total Unpaid</h5>
+                <h3>@Model.TotalUnpaid.ToString("C2")</h3>
+            </div>
+        </div>
+    </div>
+</div>

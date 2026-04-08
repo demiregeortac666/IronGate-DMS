@@ -1,0 +1,59 @@
+﻿@model DormitoryManagementSystem.Models.MaintenanceRequest
+
+@{
+    ViewData["Title"] = "New Maintenance Request";
+}
+
+<h2>New Maintenance Request</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+<form asp-action="Create" method="post">
+
+    @if (ViewBag.StudentLocked == true)
+    {
+        <div class="form-group">
+            <label>Room</label>
+            <select asp-for="RoomId" class="form-control" asp-items="ViewBag.RoomId"></select>
+            <span asp-validation-for="RoomId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mt-2">
+            <label>Student</label>
+            <select asp-for="StudentId" class="form-control" asp-items="ViewBag.StudentId"></select>
+            <span asp-validation-for="StudentId" class="text-danger"></span>
+        </div>
+        <small class="text-muted">Your request will be created for your own room and student record.</small>
+    }
+    else
+    {
+        <div class="form-group">
+            <label>Room</label>
+            <select asp-for="RoomId" class="form-control" asp-items="ViewBag.RoomId">
+                <option value="">-- Select Room --</option>
+            </select>
+            <span asp-validation-for="RoomId" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mt-2">
+            <label>Student</label>
+            <select asp-for="StudentId" class="form-control" asp-items="ViewBag.StudentId">
+                <option value="">-- Select Student --</option>
+            </select>
+            <span asp-validation-for="StudentId" class="text-danger"></span>
+        </div>
+    }
+
+    <div class="form-group mt-2">
+        <label>Description</label>
+        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Describe the issue..."></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Submit Request</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

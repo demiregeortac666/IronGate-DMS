@@ -1,0 +1,44 @@
+﻿@model DormitoryManagementSystem.Models.Payment
+
+<h2>Delete Payment</h2>
+
+<div class="alert alert-danger">
+    <strong>Warning!</strong> Are you sure you want to delete this payment? This action cannot be undone.
+</div>
+
+<table class="table" style="max-width:500px;">
+    <tr>
+        <th>Payment ID</th>
+        <td>@Model.Id</td>
+    </tr>
+    <tr>
+        <th>Invoice ID</th>
+        <td>@Model.InvoiceId</td>
+    </tr>
+    <tr>
+        <th>Student</th>
+        <td>@(Model.Invoice?.Student?.FullName ?? "-")</td>
+    </tr>
+    <tr>
+        <th>Tutar</th>
+        <td>@Model.Amount.ToString("C2")</td>
+    </tr>
+    <tr>
+        <th>Payment Date</th>
+        <td>@Model.PaidAt.ToString("dd.MM.yyyy HH:mm")</td>
+    </tr>
+    <tr>
+        <th>Method</th>
+        <td>@(Model.Method ?? "-")</td>
+    </tr>
+    <tr>
+        <th>Makbuz No</th>
+        <td>@(Model.ReceiptNo ?? "-")</td>
+    </tr>
+</table>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

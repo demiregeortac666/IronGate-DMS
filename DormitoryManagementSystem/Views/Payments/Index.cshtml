@@ -1,0 +1,40 @@
+﻿@model List<DormitoryManagementSystem.Models.Payment>
+
+<h2>Payments</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">New Payment</a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Invoice</th>
+            <th>Student</th>
+            <th>Amount</th>
+            <th>PaidAt</th>
+            <th>Method</th>
+            <th>Receipt</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model)
+        {
+            <tr>
+                <td>@p.Id</td>
+                <td>@p.InvoiceId</td>
+                <td>@(p.Invoice?.Student?.FullName ?? "-")</td>
+                <td>@p.Amount</td>
+                <td>@p.PaidAt.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@p.Method</td>
+                <td>@p.ReceiptNo</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@p.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@p.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,50 @@
+﻿@model DormitoryManagementSystem.Models.FinanceSummaryVM
+
+@{
+    ViewData["Title"] = "Finance Summary";
+}
+
+<h2>Finance Summary</h2>
+<div class="row">
+    @* Total invoiced amount *@
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm p-3">
+            <h5>Total Invoices</h5>
+            <p class="fs-4">@Model.TotalInvoices.ToString("C")</p>
+        </div>
+    </div>
+
+    @* Total payments received *@
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm p-3">
+            <h5>Total Paid Payments</h5>
+            <p class="fs-4">@Model.TotalPaidPayments.ToString("C")</p>
+        </div>
+    </div>
+
+    @* Total unpaid balance *@
+    <div class="col-md-4 mb-3">
+        <div class="card shadow-sm p-3">
+            <h5>Total Unpaid Invoices</h5>
+            <p class="fs-4">@Model.TotalUnpaidInvoices.ToString("C")</p>
+        </div>
+    </div>
+</div> @* End of top row *@
+
+<div class="row">
+    @* Paid invoice count *@
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm p-3">
+            <h5>Paid Invoice Count</h5>
+            <p class="fs-4">@Model.PaidInvoiceCount</p>
+        </div>
+    </div>
+
+    @* Unpaid invoice count *@
+    <div class="col-md-6 mb-3">
+        <div class="card shadow-sm p-3">
+            <h5>Unpaid Invoice Count</h5>
+            <p class="fs-4">@Model.UnpaidInvoiceCount</p>
+        </div>
+    </div>
+</div> @* End of bottom row *@

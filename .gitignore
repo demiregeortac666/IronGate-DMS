@@ -1,0 +1,7 @@
+﻿.vs/
+bin/
+obj/
+*.user
+dormitory.db
+dormitory.db-wal
+dormitory.db-shm

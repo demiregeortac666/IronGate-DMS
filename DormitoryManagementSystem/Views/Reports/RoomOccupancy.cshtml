@@ -1,0 +1,25 @@
+﻿@model List<DormitoryManagementSystem.Controllers.RoomOccupancyVM>
+
+<h2>Room Occupancy Report</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Room</th>
+            <th>Capacity</th>
+            <th>Students</th>
+            <th>Empty</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.RoomNumber</td>
+                <td>@r.Capacity</td>
+                <td>@r.StudentCount</td>
+                <td>@(r.Capacity - r.StudentCount)</td>
+            </tr>
+        }
+    </tbody>
+</table>

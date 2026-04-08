@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Access Denied";
+}
+
+<div class="text-center mt-5">
+    <h2 class="text-danger">Access Denied</h2>
+    <p>You do not have permission to access this page.</p>
+    @if (User.IsInRole("Student"))
+    {
+        <a asp-controller="Maintenance" asp-action="Index" class="btn btn-primary">Go to Maintenance</a>
+    }
+    else
+    {
+        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Go to Dashboard</a>
+    }
+</div>

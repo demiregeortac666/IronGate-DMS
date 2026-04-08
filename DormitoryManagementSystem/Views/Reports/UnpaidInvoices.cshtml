@@ -1,0 +1,39 @@
+﻿@model List<DormitoryManagementSystem.Models.Reports.UnpaidInvoiceReportVM>
+
+@{
+    ViewData["Title"] = "Unpaid Invoices";
+}
+
+<h2>Unpaid Invoices</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Student</th>
+            <th>Student No</th>
+            <th>Room</th>
+            <th>Period</th>
+            <th>Invoice Amount</th>
+            <th>Paid</th>
+            <th>Remaining</th>
+            <th>Due Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.StudentName</td>
+                <td>@item.StudentNo</td>
+                <td>@item.RoomNumber</td>
+                <td>@item.PeriodMonth</td>
+                <td>@item.InvoiceAmount.ToString("C")</td>
+                <td>@item.PaidAmount.ToString("C")</td>
+                <td class="text-danger fw-bold">@item.RemainingAmount.ToString("C")</td>
+                <td>@item.DueDate.ToString("dd.MM.yyyy")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p class="mt-3"><strong>Total Remaining:</strong> <span class="text-danger">@Model.Sum(m => m.RemainingAmount).ToString("C")</span></p>

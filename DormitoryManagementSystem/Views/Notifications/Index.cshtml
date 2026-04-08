@@ -1,0 +1,35 @@
+﻿@model IEnumerable<DormitoryManagementSystem.Models.Notification>
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<h2>Notifications</h2>
+@if (User.IsInRole("Admin"))
+{
+    <a asp-action="Send" class="btn btn-primary mb-3">Send Notification</a>
+}
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr><th>Date</th><th>Message</th><th>Status</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var n in Model)
+        {
+            <tr class="@(!n.IsRead ? "table-warning" : "")">
+                <td>@n.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                <td>@n.Message</td>
+                <td>@(n.IsRead ? "Read" : "Unread")</td>
+                <td>
+                    @if (!n.IsRead)
+                    {
+                        <form asp-action="MarkAsRead" asp-route-id="@n.Id" method="post" style="display:inline;">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-success">Mark Read</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

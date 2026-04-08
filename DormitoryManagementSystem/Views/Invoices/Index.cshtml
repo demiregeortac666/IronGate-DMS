@@ -1,0 +1,50 @@
+﻿@model List<DormitoryManagementSystem.Models.Invoice>
+
+<form method="get" class="mb-3">
+    <div class="input-group" style="max-width:400px;">
+        <select name="status" class="form-select">
+            <option value="">All</option>
+            <option value="Paid" selected="@(ViewBag.Status == "Paid" ? "selected" : null)">Paid</option>
+            <option value="Unpaid" selected="@(ViewBag.Status == "Unpaid" ? "selected" : null)">Unpaid</option>
+        </select>
+        <button type="submit" class="btn btn-outline-primary">Filter</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+    </div>
+</form>
+<h2>Invoices</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">New Invoice</a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Student</th>
+            <th>Period</th>
+            <th>Amount</th>
+            <th>DueDate</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var i in Model)
+        {
+            <tr>
+                <td>@i.Id</td>
+                <td>@(i.Student != null ? i.Student.FullName : "-")</td>
+                <td>@i.PeriodMonth</td>
+                <td>@i.Amount</td>
+                <td>@i.DueDate.ToString("yyyy-MM-dd")</td>
+                <td>@i.Status</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@i.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@i.Id" class="btn btn-sm btn-info text-white">Details</a>
+                    <a asp-action="Delete" asp-route-id="@i.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

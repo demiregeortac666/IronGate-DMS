@@ -1,0 +1,29 @@
+﻿@model IEnumerable<DormitoryManagementSystem.Models.User>
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h2>User Management</h2>
+<a asp-action="Create" class="btn btn-primary mb-3">Add User</a>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr><th>Username</th><th>Full Name</th><th>Email</th><th>Role</th><th>Active</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Username</td>
+                <td>@u.FullName</td>
+                <td>@(u.Email ?? "-")</td>
+                <td><span class="badge bg-info">@(u.Role?.RoleName ?? "-")</span></td>
+                <td>@(u.IsActive ? "Yes" : "No")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@u.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@u.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

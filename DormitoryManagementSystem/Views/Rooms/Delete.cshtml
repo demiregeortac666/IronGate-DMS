@@ -1,0 +1,16 @@
+﻿@model DormitoryManagementSystem.Models.Room
+<h2>Delete Room</h2>
+<p>Are you sure you want to delete this room?</p>
+
+<ul>
+    <li>Id: @Model.Id</li>
+    <li>Room Number: @Model.RoomNumber</li>
+    <li>Capacity: @Model.Capacity</li>
+</ul>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
