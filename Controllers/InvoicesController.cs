@@ -92,16 +92,24 @@ namespace DormitoryManagementSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Invoices.Add(invoice);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Invoices.Add(invoice);
+                    _context.SaveChanges();
 
-                // LOG: Invoice created
-                _audit.Log("Create", "Invoice", invoice.Id, $"Created invoice for Period: {invoice.PeriodMonth}");
+                    // LOG: Invoice created
+                    _audit.Log("Create", "Invoice", invoice.Id, $"Created invoice for Period: {invoice.PeriodMonth}");
 
-                // AUTO-NOTIFY: Tell the student about the new invoice
-                _notify.SendToStudent(invoice.StudentId, $"📄 Yeni faturanız oluşturuldu! Dönem: {invoice.PeriodMonth}, Tutar: {invoice.Amount:C}");
+                    // AUTO-NOTIFY: Tell the student about the new invoice
+                    _notify.SendToStudent(invoice.StudentId, $"📄 Yeni faturanız oluşturuldu! Dönem: {invoice.PeriodMonth}, Tutar: {invoice.Amount:C}");
 
-                return RedirectToAction(nameof(Index));
+                    TempData["Success"] = "Fatura başarıyla oluşturuldu.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException)
+                {
+                    ModelState.AddModelError("", "Veritabanına kaydedilirken bir hata oluştu.");
+                }
             }
             ViewBag.StudentId = new SelectList(_context.Students.OrderBy(s => s.FullName), "Id", "FullName", invoice.StudentId);
             return View(invoice);
@@ -122,15 +130,28 @@ namespace DormitoryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Invoice invoice)
         {
+            if (_context.Invoices.Any(i => i.StudentId == invoice.StudentId && i.PeriodMonth == invoice.PeriodMonth && i.Id != invoice.Id))
+            {
+                ModelState.AddModelError("", "Aynı döneme ait başka bir fatura bu öğrenci için zaten mevcut.");
+            }
+
             if (ModelState.IsValid)
             {
-                _context.Invoices.Update(invoice);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Invoices.Update(invoice);
+                    _context.SaveChanges();
 
-                // LOG: Invoice updated
-                _audit.Log("Update", "Invoice", invoice.Id, $"Updated invoice for Period: {invoice.PeriodMonth}");
+                    // LOG: Invoice updated
+                    _audit.Log("Update", "Invoice", invoice.Id, $"Updated invoice for Period: {invoice.PeriodMonth}");
 
-                return RedirectToAction(nameof(Index));
+                    TempData["Success"] = "Fatura başarıyla güncellendi.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException)
+                {
+                    ModelState.AddModelError("", "Veritabanı güncellenirken bir hata oluştu.");
+                }
             }
             ViewBag.StudentId = new SelectList(_context.Students.OrderBy(s => s.FullName), "Id", "FullName", invoice.StudentId);
             return View(invoice);
@@ -152,13 +173,21 @@ namespace DormitoryManagementSystem.Controllers
             var invoice = _context.Invoices.FirstOrDefault(i => i.Id == id);
             if (invoice != null)
             {
-                string periodMonth = invoice.PeriodMonth;
+                try
+                {
+                    string periodMonth = invoice.PeriodMonth;
 
-                _context.Invoices.Remove(invoice);
-                _context.SaveChanges();
+                    _context.Invoices.Remove(invoice);
+                    _context.SaveChanges();
 
-                // LOG: Invoice deleted
-                _audit.Log("Delete", "Invoice", id, $"Deleted invoice for Period: {periodMonth}");
+                    // LOG: Invoice deleted
+                    _audit.Log("Delete", "Invoice", id, $"Deleted invoice for Period: {periodMonth}");
+                    TempData["Success"] = "Fatura sistemi üzerinden tamamen silindi.";
+                }
+                catch (DbUpdateException)
+                {
+                    TempData["Error"] = "Bu fatura silinemiyor çünkü bağlı ödemeler mevcut. Lütfen önce ödemeleri silin.";
+                }
             }
             return RedirectToAction(nameof(Index));
         }

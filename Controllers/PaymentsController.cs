@@ -70,20 +70,28 @@ namespace DormitoryManagementSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Payments.Add(payment);
-                _context.SaveChanges();
-
-                // LOG: Payment created
-                _audit.Log("Create", "Payment", payment.Id, $"Created payment of {payment.Amount} for Invoice ID: {payment.InvoiceId}");
-
-                // AUTO-NOTIFY: Confirm the payment to the student
-                if (invoice != null)
+                try
                 {
-                    _notify.SendToStudent(invoice.StudentId, $"✅ Ödemeniz alındı! Tutar: {payment.Amount:C}, Fatura ID: {payment.InvoiceId}");
-                }
+                    _context.Payments.Add(payment);
+                    _context.SaveChanges();
 
-                SyncInvoiceStatus(payment.InvoiceId);
-                return RedirectToAction(nameof(Index));
+                    // LOG: Payment created
+                    _audit.Log("Create", "Payment", payment.Id, $"Created payment of {payment.Amount} for Invoice ID: {payment.InvoiceId}");
+
+                    // AUTO-NOTIFY: Confirm the payment to the student
+                    if (invoice != null)
+                    {
+                        _notify.SendToStudent(invoice.StudentId, $"✅ Ödemeniz alındı! Tutar: {payment.Amount:C}, Fatura ID: {payment.InvoiceId}");
+                    }
+
+                    SyncInvoiceStatus(payment.InvoiceId);
+                    TempData["Success"] = "Ödeme başarıyla oluşturuldu.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException)
+                {
+                    ModelState.AddModelError("", "Veritabanına kaydedilirken bir hata oluştu.");
+                }
             }
 
             ViewBag.InvoiceId = GetInvoiceSelectList(payment.InvoiceId);
@@ -105,16 +113,40 @@ namespace DormitoryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Payment payment)
         {
+            var invoice = _context.Invoices.FirstOrDefault(i => i.Id == payment.InvoiceId);
+            if (invoice != null)
+            {
+                var otherPaymentsTotal = _context.Payments.Where(p => p.InvoiceId == invoice.Id && p.Id != payment.Id).Sum(p => (decimal?)p.Amount) ?? 0;
+                var totalOwed = invoice.Amount + invoice.PenaltyAmount;
+                
+                if (otherPaymentsTotal + payment.Amount > totalOwed)
+                {
+                    ModelState.AddModelError("Amount", $"Payment amount cannot exceed the remaining balance of {(totalOwed - otherPaymentsTotal):C}.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("InvoiceId", "Invalid invoice.");
+            }
+
             if (ModelState.IsValid)
             {
-                _context.Payments.Update(payment);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Payments.Update(payment);
+                    _context.SaveChanges();
 
-                // LOG: Payment updated
-                _audit.Log("Update", "Payment", payment.Id, $"Updated payment ID: {payment.Id} (New Amount: {payment.Amount})");
+                    // LOG: Payment updated
+                    _audit.Log("Update", "Payment", payment.Id, $"Updated payment ID: {payment.Id} (New Amount: {payment.Amount})");
 
-                SyncInvoiceStatus(payment.InvoiceId);
-                return RedirectToAction(nameof(Index));
+                    SyncInvoiceStatus(payment.InvoiceId);
+                    TempData["Success"] = "Ödeme başarıyla güncellendi.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException)
+                {
+                    ModelState.AddModelError("", "Veritabanı güncellenirken bir hata oluştu.");
+                }
             }
 
             ViewBag.InvoiceId = GetInvoiceSelectList(payment.InvoiceId);
@@ -144,13 +176,21 @@ namespace DormitoryManagementSystem.Controllers
             var invoiceId = payment.InvoiceId;
             var amount = payment.Amount;
 
-            _context.Payments.Remove(payment);
-            _context.SaveChanges();
+            try
+            {
+                _context.Payments.Remove(payment);
+                _context.SaveChanges();
 
-            // LOG: Payment deleted
-            _audit.Log("Delete", "Payment", id, $"Deleted payment of {amount} for Invoice ID: {invoiceId}");
+                // LOG: Payment deleted
+                _audit.Log("Delete", "Payment", id, $"Deleted payment of {amount} for Invoice ID: {invoiceId}");
 
-            SyncInvoiceStatus(invoiceId);
+                SyncInvoiceStatus(invoiceId);
+                TempData["Success"] = "Ödeme başarıyla silindi.";
+            }
+            catch (DbUpdateException)
+            {
+                TempData["Error"] = "Bu ödeme silinirken bir veritabanı hatası oluştu.";
+            }
             return RedirectToAction(nameof(Index));
         }
 

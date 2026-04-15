@@ -42,12 +42,20 @@ namespace DormitoryManagementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Rooms.Add(room);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Rooms.Add(room);
+                    _context.SaveChanges();
 
-                _audit.Log("Create", "Room", room.Id, $"Created room: {room.RoomNumber}");
+                    _audit.Log("Create", "Room", room.Id, $"Created room: {room.RoomNumber}");
 
-                return RedirectToAction(nameof(Index));
+                    TempData["Success"] = "Oda başarıyla oluşturuldu.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException)
+                {
+                    ModelState.AddModelError("", "Oda kaydedilirken veritabanı hatası oluştu. Oda numarası kullanılıyor olabilir.");
+                }
             }
             return View(room);
         }
@@ -74,12 +82,20 @@ namespace DormitoryManagementSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Rooms.Update(room);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Rooms.Update(room);
+                    _context.SaveChanges();
 
-                _audit.Log("Update", "Room", room.Id, $"Updated room: {room.RoomNumber}");
+                    _audit.Log("Update", "Room", room.Id, $"Updated room: {room.RoomNumber}");
 
-                return RedirectToAction(nameof(Index));
+                    TempData["Success"] = "Oda başarıyla güncellendi.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException)
+                {
+                    ModelState.AddModelError("", "Oda güncellenirken veritabanı hatası oluştu.");
+                }
             }
             return View(room);
         }
@@ -108,12 +124,21 @@ namespace DormitoryManagementSystem.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            string roomNumber = room.RoomNumber;
+            try
+            {
+                string roomNumber = room.RoomNumber;
 
-            _context.Rooms.Remove(room);
-            _context.SaveChanges();
+                _context.Rooms.Remove(room);
+                _context.SaveChanges();
 
-            _audit.Log("Delete", "Room", id, $"Deleted room: {roomNumber}");
+                _audit.Log("Delete", "Room", id, $"Deleted room: {roomNumber}");
+
+                TempData["Success"] = "Oda başarıyla silindi.";
+            }
+            catch (DbUpdateException)
+            {
+                TempData["Error"] = "Oda silinemiyor. Lütfen önce bu odaya bağlı verileri temizleyin.";
+            }
 
             return RedirectToAction(nameof(Index));
         }

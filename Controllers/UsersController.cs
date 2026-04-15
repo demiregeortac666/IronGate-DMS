@@ -43,12 +43,23 @@ namespace DormitoryManagementSystem.Controllers
             if (user.RoleId == _context.Roles.FirstOrDefault(r => r.RoleName == "Student")?.Id && !user.StudentId.HasValue)
                 ModelState.AddModelError("StudentId", "Please select a student for Student role.");
 
+            if (user.StudentId.HasValue && _context.Users.Any(u => u.StudentId == user.StudentId))
+                ModelState.AddModelError("StudentId", "Bu öğrenci için zaten bir kullanıcı hesabı oluşturulmuş.");
+
             if (ModelState.IsValid)
             {
-                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
-                _context.Users.Add(user);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
+                    _context.Users.Add(user);
+                    _context.SaveChanges();
+                    TempData["Success"] = "Kullanıcı başarıyla oluşturuldu.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException)
+                {
+                    ModelState.AddModelError("", "Kullanıcı kaydedilirken bir veritabanı hatası oluştu.");
+                }
             }
 
             ViewBag.RoleId = new SelectList(_context.Roles, "Id", "RoleName", user.RoleId);
@@ -77,6 +88,9 @@ namespace DormitoryManagementSystem.Controllers
             if (user.RoleId == _context.Roles.FirstOrDefault(r => r.RoleName == "Student")?.Id && !user.StudentId.HasValue)
                 ModelState.AddModelError("StudentId", "Please select a student for Student role.");
 
+            if (user.StudentId.HasValue && _context.Users.Any(u => u.StudentId == user.StudentId && u.Id != user.Id))
+                ModelState.AddModelError("StudentId", "Bu öğrenci için zaten bir kullanıcı hesabı oluşturulmuş.");
+
             if (!ModelState.IsValid)
             {
                 ViewBag.RoleId = new SelectList(_context.Roles, "Id", "RoleName", user.RoleId);
@@ -87,17 +101,28 @@ namespace DormitoryManagementSystem.Controllers
             var existing = _context.Users.FirstOrDefault(u => u.Id == user.Id);
             if (existing == null) return NotFound();
 
-            existing.FullName = user.FullName;
-            existing.Email = user.Email;
-            existing.RoleId = user.RoleId;
-            existing.StudentId = user.StudentId;
-            existing.IsActive = user.IsActive;
+            try
+            {
+                existing.FullName = user.FullName;
+                existing.Email = user.Email;
+                existing.RoleId = user.RoleId;
+                existing.StudentId = user.StudentId;
+                existing.IsActive = user.IsActive;
 
-            if (!string.IsNullOrEmpty(newPassword))
-                existing.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
+                if (!string.IsNullOrEmpty(newPassword))
+                    existing.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
 
-            _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+                _context.SaveChanges();
+                TempData["Success"] = "Kullanıcı bilgileri güncellendi.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError("", "Kullanıcı güncellenirken bir veritabanı hatası oluştu.");
+                ViewBag.RoleId = new SelectList(_context.Roles, "Id", "RoleName", user.RoleId);
+                ViewBag.StudentId = new SelectList(_context.Students.OrderBy(s => s.FullName), "Id", "FullName", user.StudentId);
+                return View(user);
+            }
         }
 
         public IActionResult Delete(int id)
@@ -131,8 +156,16 @@ namespace DormitoryManagementSystem.Controllers
                 }
             }
 
-            _context.Users.Remove(user);
-            _context.SaveChanges();
+            try
+            {
+                _context.Users.Remove(user);
+                _context.SaveChanges();
+                TempData["Success"] = "Kullanıcı başarıyla silindi.";
+            }
+            catch (DbUpdateException)
+            {
+                TempData["Error"] = "Kullanıcı silinemedi. Bağlı veriler olabilir.";
+            }
             return RedirectToAction(nameof(Index));
         }
     }

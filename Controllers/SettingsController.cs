@@ -3,6 +3,7 @@ using DormitoryManagementSystem.Models;
 using DormitoryManagementSystem.Services; // AuditService
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryManagementSystem.Controllers
 {
@@ -40,13 +41,20 @@ namespace DormitoryManagementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Settings.Add(setting);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Settings.Add(setting);
+                    _context.SaveChanges();
 
-                // LOG: Setting created
-                _audit.Log("Create", "Setting", setting.Id, $"Created setting: {setting.Key}");
+                    // LOG: Setting created
+                    _audit.Log("Create", "Setting", setting.Id, $"Created setting: {setting.Key}");
 
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException)
+                {
+                    ModelState.AddModelError("Key", "Bu ayar anahtarı zaten mevcut. Lütfen benzersiz bir anahtar girin.");
+                }
             }
             return View(setting);
         }
@@ -66,13 +74,20 @@ namespace DormitoryManagementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Settings.Update(setting);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Settings.Update(setting);
+                    _context.SaveChanges();
 
-                // LOG: Setting updated
-                _audit.Log("Update", "Setting", setting.Id, $"Updated setting: {setting.Key}");
+                    // LOG: Setting updated
+                    _audit.Log("Update", "Setting", setting.Id, $"Updated setting: {setting.Key}");
 
-                return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException)
+                {
+                    ModelState.AddModelError("Key", "Bu ayar anahtarı zaten mevcut. Lütfen benzersiz bir anahtar girin.");
+                }
             }
             return View(setting);
         }

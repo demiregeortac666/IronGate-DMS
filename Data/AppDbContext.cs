@@ -26,6 +26,7 @@ namespace DormitoryManagementSystem.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
+            modelBuilder.Entity<User>().HasIndex(u => u.StudentId).IsUnique();
             modelBuilder.Entity<Student>().HasIndex(s => s.StudentNo).IsUnique();
             modelBuilder.Entity<Room>().HasIndex(r => r.RoomNumber).IsUnique();
             modelBuilder.Entity<Setting>().HasIndex(s => s.Key).IsUnique();

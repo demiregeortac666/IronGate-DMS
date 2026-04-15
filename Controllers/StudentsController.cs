@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DormitoryManagementSystem.Data;
 using DormitoryManagementSystem.Models;
 using DormitoryManagementSystem.Services; // AuditService
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,11 +18,13 @@ namespace DormitoryManagementSystem.Controllers
     {
         private readonly AppDbContext _context;
         private readonly AuditService _audit;
+        private readonly IWebHostEnvironment _env;
 
-        public StudentsController(AppDbContext context, AuditService audit)
+        public StudentsController(AppDbContext context, AuditService audit, IWebHostEnvironment env)
         {
             _context = context;
             _audit = audit;
+            _env = env;
         }
 
         // STUDENT LIST AND SEARCH
@@ -65,13 +69,21 @@ namespace DormitoryManagementSystem.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Students.Add(student);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Students.Add(student);
+                    _context.SaveChanges();
 
-                // LOG: Student created
-                _audit.Log("Create", "Student", student.Id, $"Created student: {student.FullName}");
+                    // LOG: Student created
+                    _audit.Log("Create", "Student", student.Id, $"Created student: {student.FullName}");
 
-                return RedirectToAction(nameof(Index));
+                    TempData["Success"] = "Öğrenci başarıyla oluşturuldu.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException)
+                {
+                    ModelState.AddModelError("", "Öğrenci kaydedilirken bir hata oluştu. Öğrenci numarası başkasına ait olabilir.");
+                }
             }
 
             ViewBag.RoomId = new SelectList(_context.Rooms.OrderBy(r => r.RoomNumber), "Id", "RoomNumber", student.RoomId);
@@ -111,13 +123,21 @@ namespace DormitoryManagementSystem.Controllers
                     }
                 }
 
-                _context.Students.Update(student);
-                _context.SaveChanges();
+                try
+                {
+                    _context.Students.Update(student);
+                    _context.SaveChanges();
 
-                // LOG: Student updated
-                _audit.Log("Update", "Student", student.Id, $"Updated student: {student.FullName}");
+                    // LOG: Student updated
+                    _audit.Log("Update", "Student", student.Id, $"Updated student: {student.FullName}");
 
-                return RedirectToAction(nameof(Index));
+                    TempData["Success"] = "Öğrenci başarıyla güncellendi.";
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException)
+                {
+                    ModelState.AddModelError("", "Öğrenci güncellenirken bir hata oluştu.");
+                }
             }
 
             ViewBag.RoomId = new SelectList(_context.Rooms.OrderBy(r => r.RoomNumber), "Id", "RoomNumber", student.RoomId);
@@ -144,29 +164,51 @@ namespace DormitoryManagementSystem.Controllers
 
             if (student != null)
             {
-                string studentName = student.FullName;
-
-                // Remove related maintenance requests
-                var maintenanceRequests = _context.MaintenanceRequests.Where(m => m.StudentId == id).ToList();
-                _context.MaintenanceRequests.RemoveRange(maintenanceRequests);
-
-                // Remove related documents
-                var documents = _context.Documents.Where(d => d.StudentId == id).ToList();
-                _context.Documents.RemoveRange(documents);
-
-                // Remove related payments (through invoices) and invoices
-                foreach (var invoice in student.Invoices)
+                try
                 {
-                    _context.Payments.RemoveRange(invoice.Payments);
+                    string studentName = student.FullName;
+
+                    // Remove related maintenance requests
+                    var maintenanceRequests = _context.MaintenanceRequests.Where(m => m.StudentId == id).ToList();
+                    _context.MaintenanceRequests.RemoveRange(maintenanceRequests);
+
+                    // Remove related documents AND physical files
+                    var documents = _context.Documents.Where(d => d.StudentId == id).ToList();
+                    var uploadRoot = Path.Combine(_env.ContentRootPath, "App_Data", "SecureUploads");
+                    foreach (var doc in documents)
+                    {
+                        if (!string.IsNullOrWhiteSpace(doc.FilePath))
+                        {
+                            var safeFileName = Path.GetFileName(doc.FilePath);
+                            var fullPath = Path.Combine(uploadRoot, safeFileName);
+                            if (System.IO.File.Exists(fullPath))
+                            {
+                                System.IO.File.Delete(fullPath);
+                            }
+                        }
+                    }
+                    _context.Documents.RemoveRange(documents);
+
+                    // Remove related payments (through invoices) and invoices
+                    foreach (var invoice in student.Invoices)
+                    {
+                        _context.Payments.RemoveRange(invoice.Payments);
+                    }
+                    _context.Invoices.RemoveRange(student.Invoices);
+
+                    // Remove the student
+                    _context.Students.Remove(student);
+                    _context.SaveChanges();
+
+                    // LOG: Silme
+                    _audit.Log("Delete", "Student", id, $"Deleted student: {studentName}");
+
+                    TempData["Success"] = "Öğrenci ve bağlı tüm veriler (dosyalar dahil) başarıyla silindi.";
                 }
-                _context.Invoices.RemoveRange(student.Invoices);
-
-                // Remove the student
-                _context.Students.Remove(student);
-                _context.SaveChanges();
-
-                // LOG: Silme
-                _audit.Log("Delete", "Student", id, $"Deleted student: {studentName}");
+                catch (DbUpdateException)
+                {
+                    TempData["Error"] = "Öğrenci silinirken bir engel oluştu. Lütfen bağlı diğer kayıtları kontrol edin.";
+                }
             }
             return RedirectToAction(nameof(Index));
         }

@@ -56,7 +56,7 @@
                                 <a class="nav-link" asp-controller="Documents" asp-action="Index">Documents</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Notifications" asp-action="Index">
+                                <a class="nav-link d-flex align-items-center gap-1" asp-controller="Notifications" asp-action="Index">
                                     <i class="bi bi-bell"></i> Notifications
                                 </a>
                             </li>
@@ -92,7 +92,7 @@
                                 <a class="nav-link" asp-controller="Maintenance" asp-action="Index">Maintenance</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Notifications" asp-action="Index">
+                                <a class="nav-link d-flex align-items-center gap-1" asp-controller="Notifications" asp-action="Index">
                                     <i class="bi bi-bell"></i> Notifications
                                 </a>
                             </li>
@@ -126,8 +126,25 @@
         </nav>
     </header>
 
-    <div class="container">
+    <div class="container mt-4">
         <main role="main" class="pb-3">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show shadow-sm d-flex align-items-center" role="alert">
+                    <i class="bi bi-check-circle-fill me-2 fs-5 flex-shrink-0"></i>
+                    <div class="flex-grow-1">@TempData["Success"]</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm d-flex align-items-center" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2 fs-5 flex-shrink-0"></i>
+                    <div class="flex-grow-1">@TempData["Error"]</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
             @RenderBody()
         </main>
     </div>
