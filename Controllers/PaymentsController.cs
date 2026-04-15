@@ -81,16 +81,16 @@ namespace DormitoryManagementSystem.Controllers
                     // AUTO-NOTIFY: Confirm the payment to the student
                     if (invoice != null)
                     {
-                        _notify.SendToStudent(invoice.StudentId, $"✅ Ödemeniz alındı! Tutar: {payment.Amount:C}, Fatura ID: {payment.InvoiceId}");
+                        _notify.SendToStudent(invoice.StudentId, $"✅ Your payment has been received! Amount: {payment.Amount:C}, Invoice ID: {payment.InvoiceId}");
                     }
 
                     SyncInvoiceStatus(payment.InvoiceId);
-                    TempData["Success"] = "Ödeme başarıyla oluşturuldu.";
+                    TempData["Success"] = "Payment successfully created.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("", "Veritabanına kaydedilirken bir hata oluştu.");
+                    ModelState.AddModelError("", "An error occurred while saving to the database.");
                 }
             }
 
@@ -140,12 +140,12 @@ namespace DormitoryManagementSystem.Controllers
                     _audit.Log("Update", "Payment", payment.Id, $"Updated payment ID: {payment.Id} (New Amount: {payment.Amount})");
 
                     SyncInvoiceStatus(payment.InvoiceId);
-                    TempData["Success"] = "Ödeme başarıyla güncellendi.";
+                    TempData["Success"] = "Payment successfully updated.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("", "Veritabanı güncellenirken bir hata oluştu.");
+                    ModelState.AddModelError("", "An error occurred while updating the database.");
                 }
             }
 
@@ -185,11 +185,11 @@ namespace DormitoryManagementSystem.Controllers
                 _audit.Log("Delete", "Payment", id, $"Deleted payment of {amount} for Invoice ID: {invoiceId}");
 
                 SyncInvoiceStatus(invoiceId);
-                TempData["Success"] = "Ödeme başarıyla silindi.";
+                TempData["Success"] = "Payment successfully deleted.";
             }
             catch (DbUpdateException)
             {
-                TempData["Error"] = "Bu ödeme silinirken bir veritabanı hatası oluştu.";
+                TempData["Error"] = "A database error occurred while deleting this payment.";
             }
             return RedirectToAction(nameof(Index));
         }

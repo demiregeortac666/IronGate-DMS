@@ -77,12 +77,12 @@ namespace DormitoryManagementSystem.Controllers
                     // LOG: Student created
                     _audit.Log("Create", "Student", student.Id, $"Created student: {student.FullName}");
 
-                    TempData["Success"] = "Öğrenci başarıyla oluşturuldu.";
+                    TempData["Success"] = "Student successfully created.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("", "Öğrenci kaydedilirken bir hata oluştu. Öğrenci numarası başkasına ait olabilir.");
+                    ModelState.AddModelError("", "An error occurred while saving the student. The student number might belong to someone else.");
                 }
             }
 
@@ -131,12 +131,12 @@ namespace DormitoryManagementSystem.Controllers
                     // LOG: Student updated
                     _audit.Log("Update", "Student", student.Id, $"Updated student: {student.FullName}");
 
-                    TempData["Success"] = "Öğrenci başarıyla güncellendi.";
+                    TempData["Success"] = "Student successfully updated.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("", "Öğrenci güncellenirken bir hata oluştu.");
+                    ModelState.AddModelError("", "An error occurred while updating the student.");
                 }
             }
 
@@ -203,11 +203,11 @@ namespace DormitoryManagementSystem.Controllers
                     // LOG: Silme
                     _audit.Log("Delete", "Student", id, $"Deleted student: {studentName}");
 
-                    TempData["Success"] = "Öğrenci ve bağlı tüm veriler (dosyalar dahil) başarıyla silindi.";
+                    TempData["Success"] = "Student and all related data (including files) successfully deleted.";
                 }
                 catch (DbUpdateException)
                 {
-                    TempData["Error"] = "Öğrenci silinirken bir engel oluştu. Lütfen bağlı diğer kayıtları kontrol edin.";
+                    TempData["Error"] = "An error occurred while deleting the student. Please check other related records.";
                 }
             }
             return RedirectToAction(nameof(Index));

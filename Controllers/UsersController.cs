@@ -44,7 +44,7 @@ namespace DormitoryManagementSystem.Controllers
                 ModelState.AddModelError("StudentId", "Please select a student for Student role.");
 
             if (user.StudentId.HasValue && _context.Users.Any(u => u.StudentId == user.StudentId))
-                ModelState.AddModelError("StudentId", "Bu öğrenci için zaten bir kullanıcı hesabı oluşturulmuş.");
+                ModelState.AddModelError("StudentId", "A user account has already been created for this student.");
 
             if (ModelState.IsValid)
             {
@@ -53,12 +53,12 @@ namespace DormitoryManagementSystem.Controllers
                     user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(password);
                     _context.Users.Add(user);
                     _context.SaveChanges();
-                    TempData["Success"] = "Kullanıcı başarıyla oluşturuldu.";
+                    TempData["Success"] = "User successfully created.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("", "Kullanıcı kaydedilirken bir veritabanı hatası oluştu.");
+                    ModelState.AddModelError("", "A database error occurred while saving the user.");
                 }
             }
 
@@ -89,7 +89,7 @@ namespace DormitoryManagementSystem.Controllers
                 ModelState.AddModelError("StudentId", "Please select a student for Student role.");
 
             if (user.StudentId.HasValue && _context.Users.Any(u => u.StudentId == user.StudentId && u.Id != user.Id))
-                ModelState.AddModelError("StudentId", "Bu öğrenci için zaten bir kullanıcı hesabı oluşturulmuş.");
+                ModelState.AddModelError("StudentId", "A user account has already been created for this student.");
 
             if (!ModelState.IsValid)
             {
@@ -113,12 +113,12 @@ namespace DormitoryManagementSystem.Controllers
                     existing.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
 
                 _context.SaveChanges();
-                TempData["Success"] = "Kullanıcı bilgileri güncellendi.";
+                TempData["Success"] = "User details updated.";
                 return RedirectToAction(nameof(Index));
             }
             catch (DbUpdateException)
             {
-                ModelState.AddModelError("", "Kullanıcı güncellenirken bir veritabanı hatası oluştu.");
+                ModelState.AddModelError("", "A database error occurred while updating the user.");
                 ViewBag.RoleId = new SelectList(_context.Roles, "Id", "RoleName", user.RoleId);
                 ViewBag.StudentId = new SelectList(_context.Students.OrderBy(s => s.FullName), "Id", "FullName", user.StudentId);
                 return View(user);
@@ -160,11 +160,11 @@ namespace DormitoryManagementSystem.Controllers
             {
                 _context.Users.Remove(user);
                 _context.SaveChanges();
-                TempData["Success"] = "Kullanıcı başarıyla silindi.";
+                TempData["Success"] = "User successfully deleted.";
             }
             catch (DbUpdateException)
             {
-                TempData["Error"] = "Kullanıcı silinemedi. Bağlı veriler olabilir.";
+                TempData["Error"] = "User could not be deleted. There may be related data.";
             }
             return RedirectToAction(nameof(Index));
         }

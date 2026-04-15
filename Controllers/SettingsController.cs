@@ -53,7 +53,7 @@ namespace DormitoryManagementSystem.Controllers
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("Key", "Bu ayar anahtarı zaten mevcut. Lütfen benzersiz bir anahtar girin.");
+                    ModelState.AddModelError("Key", "This setting key already exists. Please enter a unique key.");
                 }
             }
             return View(setting);
@@ -86,7 +86,7 @@ namespace DormitoryManagementSystem.Controllers
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("Key", "Bu ayar anahtarı zaten mevcut. Lütfen benzersiz bir anahtar girin.");
+                    ModelState.AddModelError("Key", "This setting key already exists. Please enter a unique key.");
                 }
             }
             return View(setting);

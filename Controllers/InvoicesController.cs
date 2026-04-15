@@ -101,14 +101,14 @@ namespace DormitoryManagementSystem.Controllers
                     _audit.Log("Create", "Invoice", invoice.Id, $"Created invoice for Period: {invoice.PeriodMonth}");
 
                     // AUTO-NOTIFY: Tell the student about the new invoice
-                    _notify.SendToStudent(invoice.StudentId, $"📄 Yeni faturanız oluşturuldu! Dönem: {invoice.PeriodMonth}, Tutar: {invoice.Amount:C}");
+                    _notify.SendToStudent(invoice.StudentId, $"📄 Your new invoice has been created! Period: {invoice.PeriodMonth}, Amount: {invoice.Amount:C}");
 
-                    TempData["Success"] = "Fatura başarıyla oluşturuldu.";
+                    TempData["Success"] = "Invoice successfully created.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("", "Veritabanına kaydedilirken bir hata oluştu.");
+                    ModelState.AddModelError("", "An error occurred while saving to the database.");
                 }
             }
             ViewBag.StudentId = new SelectList(_context.Students.OrderBy(s => s.FullName), "Id", "FullName", invoice.StudentId);
@@ -132,7 +132,7 @@ namespace DormitoryManagementSystem.Controllers
         {
             if (_context.Invoices.Any(i => i.StudentId == invoice.StudentId && i.PeriodMonth == invoice.PeriodMonth && i.Id != invoice.Id))
             {
-                ModelState.AddModelError("", "Aynı döneme ait başka bir fatura bu öğrenci için zaten mevcut.");
+                ModelState.AddModelError("", "Another invoice for the same period already exists for this student.");
             }
 
             if (ModelState.IsValid)
@@ -145,12 +145,12 @@ namespace DormitoryManagementSystem.Controllers
                     // LOG: Invoice updated
                     _audit.Log("Update", "Invoice", invoice.Id, $"Updated invoice for Period: {invoice.PeriodMonth}");
 
-                    TempData["Success"] = "Fatura başarıyla güncellendi.";
+                    TempData["Success"] = "Invoice successfully updated.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("", "Veritabanı güncellenirken bir hata oluştu.");
+                    ModelState.AddModelError("", "An error occurred while updating the database.");
                 }
             }
             ViewBag.StudentId = new SelectList(_context.Students.OrderBy(s => s.FullName), "Id", "FullName", invoice.StudentId);
@@ -182,11 +182,11 @@ namespace DormitoryManagementSystem.Controllers
 
                     // LOG: Invoice deleted
                     _audit.Log("Delete", "Invoice", id, $"Deleted invoice for Period: {periodMonth}");
-                    TempData["Success"] = "Fatura sistemi üzerinden tamamen silindi.";
+                    TempData["Success"] = "Invoice completely deleted from the system.";
                 }
                 catch (DbUpdateException)
                 {
-                    TempData["Error"] = "Bu fatura silinemiyor çünkü bağlı ödemeler mevcut. Lütfen önce ödemeleri silin.";
+                    TempData["Error"] = "This invoice cannot be deleted because there are linked payments. Please delete the payments first.";
                 }
             }
             return RedirectToAction(nameof(Index));

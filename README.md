@@ -1,66 +1,66 @@
 # Dormitory Management System (DMS 2026)
 
-Bu proje, bir öğrenci yurdunun yönetim süreçlerini kolaylaştırmak, gelir/giderleri takip etmek ve öğrenci-oda kayıtlarını dijital ortamda yönetmek amacıyla geliştirilmiş kapsamlı bir **SaaS (Software as a Service)** web uygulamasıdır.
+This project is a comprehensive **SaaS (Software as a Service)** web application developed to simplify the management processes of a student dormitory, track income/expenses, and manage student-room records in a digital environment.
 
-## 🚀 Teknolojiler
-- **Backend:** C#, ASP.NET Core MVC (8.0/7.0 uyumlu)
-- **Veritabanı:** SQLite & Entity Framework Core (Code-First)
+## 🚀 Technologies
+- **Backend:** C#, ASP.NET Core MVC (8.0/7.0 compatible)
+- **Database:** SQLite & Entity Framework Core (Code-First)
 - **Frontend:** HTML5, CSS3, Bootstrap 5, Chart.js, Bootstrap Icons
-- **Mimari:** Model-View-Controller (MVC)
+- **Architecture:** Model-View-Controller (MVC)
 
-## 🛠️ Nasıl Çalıştırılır?
-Projeyi sıfırdan derlemek ve başlatmak için aşağıdaki adımları kullanabilirsiniz:
+## 🛠️ How to Run?
+You can use the following steps to build and start the project from scratch:
 
-1. Proje dizininde terminali açın:
+1. Open the terminal in the project directory:
    ```bash
    dotnet clean
    dotnet restore
    dotnet build
    ```
-2. Veritabanının sıfırdan oluşturulması için:
+2. To create the database from scratch:
    ```bash
    dotnet ef database update
    ```
-3. Projeyi çalıştırın:
+3. Run the project:
    ```bash
    dotnet run
    ```
 
-> **Not:** Sistem varsayılan olarak `dormitory.db` adında bir SQLite dosyası oluşturur ve ilk çalıştırmada gerekli örnek verileri (seed data) içeriye doldurur.
+> **Note:** The system creates an SQLite file named `dormitory.db` by default and populates it with necessary sample data (seed data) on the first run.
 
-## 👥 Varsayılan Kullanıcılar (Demo Test İçin)
-Aşağıdaki kullanıcılarla sisteme giriş yapabilirsiniz. Şifrelerin tamamı: **Admin123!**
-- **Admin Hesabı:** username: `admin` | role: Admin
-- **Personel Hesabı:** username: `staff` | role: Staff
-- **Öğrenci Hesabı:** username: `s.yilmaz` | role: Student
+## 👥 Default Users (For Demo Testing)
+You can log in to the system with the following users. All passwords are: **Admin123!**
+- **Admin Account:** username: `admin` | role: Admin
+- **Staff Account:** username: `staff` | role: Staff
+- **Student Account:** username: `s.yilmaz` | role: Student
 
-## ✨ Özellikler
+## ✨ Features
 
-### Admin Özellikleri
-- Tüm kullanıcıları ve rolleri yönetme.
-- Silinemez log kayıtları aracılığıyla denetim (Audit Logs).
-- Sistem ayarlarını değiştirme.
+### Admin Features
+- Manage all users and roles.
+- Audit via undeletable log records (Audit Logs).
+- Change system settings.
 
-### Staff (Personel) Özellikleri
-- Öğrenci kayıt kabulü ve oda ataması (Kapasite kontrollü).
-- Fatura (Invoice) ve tahsilat/ödeme (Payment) işleme (Mükerrer ve fazla ödeme engellidir).
-- Öğrenci belgelerinin güvenli bir şekilde sisteme yüklenmesi ve barındırılması.
+### Staff Features
+- Student registration acceptance and room assignment (Capacity controlled).
+- Invoice and Payment processing (Duplicate and overpayment are prevented).
+- Secure upload and hosting of student documents in the system.
 
-### Student (Öğrenci) Özellikleri
-- Kendisine ait ödemeleri ve fatura geçmişini inceleme.
-- Bakım & Onarım (Maintenance) talebi oluşturma.
+### Student Features
+- Review own payments and invoice history.
+- Create Maintenance & Repair request.
 
-### Dashboard & Raporlar (Reports)
-- Yurdun doluluk oranının, açık/kapalı genel maliyetlerin Chart.js bar, doughnut ve line grafikleri yardımıyla görselleştirilmesi.
-- Aylık kazanç analizleri, ödenmemiş faturalar raporu ve öğrenci borç tabloları.
+### Dashboard & Reports
+- Visualization of dormitory occupancy rate, open/closed general costs using Chart.js bar, doughnut, and line charts.
+- Monthly income analysis, unpaid invoices report, and student debt tables.
 
-## 💡 Eklenen Ekstra Geliştirmeler
-1. **Veri Bütünlüğü ve Kısıtlamalar:**
-   - Aynı dönem içinde çift fatura kesilmesi engellendi.
-   - Tanımlı borcu aşan ödeme/tahsilat (overpayment) senaryoları engellendi.
-   - Her `Student` başına yalnızca bir sistem kullanıcısı hesabı açılabilmesi için eşsizlik zincirleri kuruldu (Unique Constraints).
-2. **Kullanıcı Deneyimi:**
-   - İşlem başarı / başarısızlık durumları tüm CRUD sayfalarına (Create/Read/Update/Delete) `TempData` Alert entegrasyonuyla yansıtıldı.
-   - Hata fırlatan kayıt silme durumlarında uygulama çökmesi yerine yakalanan açık ve net mesajlar eklendi (Örn: "Öğrenciye ait ödemeler olduğu için önce ödemeler silinmelidir.").
-3. **Güvenli Dosya Yönetimi:**
-   - Siber güvenliği sağlamak amacıyla dosya yüklemelerinde `Guid` üretilerek gerçek isimler maskelendi. Öğrenci hesabı tamamen silinirken, sunucudaki yüklenmiş fiziksel dosyanın da silinmesi programlandı.
+## 💡 Additional Enhancements Added
+1. **Data Integrity and Constraints:**
+   - Double invoicing in the same period is prevented.
+   - Payment scenarios exceeding the defined debt (overpayment) are prevented.
+   - Unique constraints are established so that only one system user account can be created per `Student`.
+2. **User Experience:**
+   - Transaction success / failure statuses are reflected on all CRUD pages (Create/Read/Update/Delete) with `TempData` Alert integration.
+   - Clear and concise caught messages are added instead of application crashes in deletion situations throwing errors (E.g.: "Since there are payments belonging to the student, payments must be deleted first.").
+3. **Secure File Management:**
+   - To ensure cybersecurity, true names are masked by generating a `Guid` during file uploads. When a student account is completely deleted, the uploaded physical file on the server is also programmed to be deleted.

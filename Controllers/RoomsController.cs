@@ -49,12 +49,12 @@ namespace DormitoryManagementSystem.Controllers
 
                     _audit.Log("Create", "Room", room.Id, $"Created room: {room.RoomNumber}");
 
-                    TempData["Success"] = "Oda başarıyla oluşturuldu.";
+                    TempData["Success"] = "Room successfully created.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("", "Oda kaydedilirken veritabanı hatası oluştu. Oda numarası kullanılıyor olabilir.");
+                    ModelState.AddModelError("", "A database error occurred while saving the room. The room number might be in use.");
                 }
             }
             return View(room);
@@ -89,12 +89,12 @@ namespace DormitoryManagementSystem.Controllers
 
                     _audit.Log("Update", "Room", room.Id, $"Updated room: {room.RoomNumber}");
 
-                    TempData["Success"] = "Oda başarıyla güncellendi.";
+                    TempData["Success"] = "Room successfully updated.";
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateException)
                 {
-                    ModelState.AddModelError("", "Oda güncellenirken veritabanı hatası oluştu.");
+                    ModelState.AddModelError("", "A database error occurred while updating the room.");
                 }
             }
             return View(room);
@@ -133,11 +133,11 @@ namespace DormitoryManagementSystem.Controllers
 
                 _audit.Log("Delete", "Room", id, $"Deleted room: {roomNumber}");
 
-                TempData["Success"] = "Oda başarıyla silindi.";
+                TempData["Success"] = "Room successfully deleted.";
             }
             catch (DbUpdateException)
             {
-                TempData["Error"] = "Oda silinemiyor. Lütfen önce bu odaya bağlı verileri temizleyin.";
+                TempData["Error"] = "Room cannot be deleted. Please clean up related data for this room first.";
             }
 
             return RedirectToAction(nameof(Index));
