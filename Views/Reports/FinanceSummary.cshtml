@@ -1,0 +1,56 @@
+@model DormitoryManagementSystem.Models.FinanceSummaryVM
+
+@{
+    ViewData["Title"] = "Finance Summary";
+}
+
+<h2 class="mb-4"><i class="bi bi-graph-up"></i> Finance Summary</h2>
+
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-info"><i class="bi bi-receipt"></i> Total Invoices</h5>
+                <h2>@Model.TotalInvoices.ToString("C")</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-success"><i class="bi bi-cash-stack"></i> Total Paid</h5>
+                <h2>@Model.TotalPaidPayments.ToString("C")</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-danger"><i class="bi bi-exclamation-triangle"></i> Total Unpaid</h5>
+                <h2>@Model.TotalUnpaidInvoices.ToString("C")</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-success"><i class="bi bi-check-circle"></i> Paid Invoice Count</h5>
+                <h2>@Model.PaidInvoiceCount</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-danger"><i class="bi bi-clock-history"></i> Unpaid Invoice Count</h5>
+                <h2>@Model.UnpaidInvoiceCount</h2>
+            </div>
+        </div>
+    </div>
+</div>

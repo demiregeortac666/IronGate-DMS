@@ -1,0 +1,33 @@
+﻿@model List<DormitoryManagementSystem.Models.Reports.StudentBalanceVM>
+
+@{
+    ViewData["Title"] = "Student Balance";
+}
+
+<h2>Student Balance</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Student</th>
+            <th>Student No</th>
+            <th>Total Invoiced</th>
+            <th>Total Paid</th>
+            <th>Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr class="@(item.Balance > 0 ? "table-warning" : item.Balance == 0 ? "table-success" : "")">
+                <td>@item.StudentName</td>
+                <td>@item.StudentNo</td>
+                <td>@item.TotalInvoiced.ToString("C")</td>
+                <td>@item.TotalPaid.ToString("C")</td>
+                <td class="fw-bold @(item.Balance > 0 ? "text-danger" : "text-success")">
+                    @item.Balance.ToString("C")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

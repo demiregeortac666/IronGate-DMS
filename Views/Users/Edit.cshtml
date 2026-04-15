@@ -1,0 +1,37 @@
+@model DormitoryManagementSystem.Models.User
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<h2>Edit User</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Username" />
+    <div class="form-group"><label>Username</label><input value="@Model.Username" class="form-control" disabled /></div>
+    <div class="form-group mt-2"><label>New Password (leave blank to keep)</label><input type="password" name="newPassword" class="form-control" /></div>
+    <div class="form-group mt-2"><label>Full Name</label><input asp-for="FullName" class="form-control" /></div>
+    <div class="form-group mt-2"><label>Email</label><input asp-for="Email" class="form-control" /></div>
+    <div class="form-group mt-2"><label>Role</label><select asp-for="RoleId" class="form-control" asp-items="ViewBag.RoleId" id="roleSelect"></select></div>
+    <div class="form-group mt-2" id="studentSelectGroup" style="display:none;"><label>Linked Student</label><select asp-for="StudentId" class="form-control" asp-items="ViewBag.StudentId"><option value="">-- Select Student --</option></select><span asp-validation-for="StudentId" class="text-danger"></span></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var roleSelect = document.getElementById('roleSelect');
+            var studentGroup = document.getElementById('studentSelectGroup');
+            function toggleStudentGroup() {
+                // Check if selected option text is 'Student'
+                if (roleSelect.options[roleSelect.selectedIndex].text === 'Student') {
+                    studentGroup.style.display = 'block';
+                } else {
+                    studentGroup.style.display = 'none';
+                }
+            }
+            roleSelect.addEventListener('change', toggleStudentGroup);
+            toggleStudentGroup();
+        });
+    </script>
+    <div class="form-check mt-2"><input asp-for="IsActive" class="form-check-input" /><label class="form-check-label">Active</label></div>
+    <button type="submit" class="btn btn-success mt-3">Save</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Cancel</a>
+</form>

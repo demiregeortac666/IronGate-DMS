@@ -1,0 +1,42 @@
+﻿@model List<DormitoryManagementSystem.Models.Student>
+
+<form method="get" class="mb-3">
+    <div class="input-group" style="max-width:400px;">
+        <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Search name or student no..." />
+        <button type="submit" class="btn btn-outline-primary">Search</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Clear</a>
+    </div>
+</form>
+<h2>Students</h2>
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Student</a>
+</p>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Full Name</th>
+            <th>Student No</th>
+            <th>Phone</th>
+            <th>Room</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in Model)
+        {
+            <tr>
+                <td>@student.Id</td>
+                <td>@student.FullName</td>
+                <td>@student.StudentNo</td>
+                <td>@student.Phone</td>
+                <td>@(student.Room != null ? student.Room.RoomNumber : "-")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@student.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@student.Id" class="btn btn-sm btn-info text-white">Details</a>
+                    <a asp-action="Delete" asp-route-id="@student.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

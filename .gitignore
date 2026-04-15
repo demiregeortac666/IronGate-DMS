@@ -1,0 +1,22 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build results
+bin/
+obj/
+
+# Web Root uploads
+wwwroot/uploads/
+
+# Database files
+*.db
+*.db-shm
+*.db-wal
+dormitory.db
+dormitory.db-shm
+dormitory.db-wal
+
+# Secure Uploads
+App_Data/

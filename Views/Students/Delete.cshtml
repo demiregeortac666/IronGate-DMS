@@ -1,0 +1,19 @@
+﻿@model DormitoryManagementSystem.Models.Student
+
+<h2>Delete Student</h2>
+<p>Are you sure you want to delete this student?</p>
+
+<ul>
+    <li><b>Id:</b> @Model.Id</li>
+    <li><b>Name:</b> @Model.FullName</li>
+    <li><b>Student No:</b> @Model.StudentNo</li>
+    <li><b>Room:</b> @(Model.Room != null ? Model.Room.RoomNumber : "-")</li>
+</ul>
+
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+

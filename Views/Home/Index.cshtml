@@ -1,0 +1,207 @@
+@model DormitoryManagementSystem.Models.DashboardVM
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row">
+    <!-- Total Rooms -->
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-primary"><i class="bi bi-door-open"></i> Total Rooms</h5>
+                <h2>@Model.TotalRooms</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Students -->
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-info"><i class="bi bi-people"></i> Total Students</h5>
+                <h2>@Model.TotalStudents</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Occupancy -->
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-success"><i class="bi bi-bar-chart"></i> Occupancy</h5>
+                <h2>@Model.OccupiedBeds / @Model.TotalBeds</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Maintenance Requests -->
+    <div class="col-md-3 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-warning"><i class="bi bi-tools"></i> Open Requests</h5>
+                <h2>@Model.OpenMaintenanceRequests</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <!-- Total Paid -->
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-success"><i class="bi bi-cash"></i> Total Paid</h5>
+                <h3>@Model.TotalPaid.ToString("C2")</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Unpaid -->
+    <div class="col-md-6 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title text-danger"><i class="bi bi-exclamation-triangle"></i> Total Unpaid</h5>
+                <h3>@Model.TotalUnpaid.ToString("C2")</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- Chart: Room Occupancy -->
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Room Occupancy</h5>
+                <canvas id="occupancyChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chart: Paid vs Unpaid -->
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Invoice Status</h5>
+                <canvas id="invoiceStatusChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart: Monthly Payments -->
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Monthly Payments</h5>
+                <canvas id="monthlyPaymentsChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Global Chart Color Config for Neumorphic Dark Theme
+            Chart.defaults.color = '#8A94A6';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.05)';
+
+            // 1. Occupancy Chart (Bar)
+            var ctxOcc = document.getElementById('occupancyChart').getContext('2d');
+            new Chart(ctxOcc, {
+                type: 'bar',
+                data: {
+                    labels: ['Beds'],
+                    datasets: [
+                        {
+                            label: 'Occupied',
+                            data: [@Model.OccupiedBeds],
+                            backgroundColor: 'rgba(40, 167, 69, 0.7)'
+                        },
+                        {
+                            label: 'Available',
+                            data: [@(Model.TotalBeds - Model.OccupiedBeds)],
+                            backgroundColor: 'rgba(108, 117, 125, 0.7)'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#f8f9fa' } }
+                    },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            ticks: { color: '#adb5bd' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#adb5bd' },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // 2. Invoice Status (Pie/Doughnut)
+            var ctxInv = document.getElementById('invoiceStatusChart').getContext('2d');
+            new Chart(ctxInv, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Paid', 'Unpaid'],
+                    datasets: [{
+                        data: [@Model.PaidInvoicesCount, @Model.UnpaidInvoicesCount],
+                        backgroundColor: ['rgba(40, 167, 69, 0.7)', 'rgba(220, 53, 69, 0.7)']
+                    }]
+                },
+                options: { 
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#f8f9fa' } }
+                    }
+                }
+            });
+
+            // 3. Monthly Payments (Line)
+            var ctxPay = document.getElementById('monthlyPaymentsChart').getContext('2d');
+            var payLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyPaymentsLabels));
+            var payData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyPaymentsData));
+            new Chart(ctxPay, {
+                type: 'line',
+                data: {
+                    labels: payLabels,
+                    datasets: [{
+                        label: 'Total Paid',
+                        data: payData,
+                        borderColor: 'rgba(0, 123, 255, 1)',
+                        backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                        fill: true,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#f8f9fa' } }
+                    },
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            ticks: { color: '#adb5bd' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        },
+                        x: {
+                            ticks: { color: '#adb5bd' },
+                            grid: { color: 'rgba(255,255,255,0.1)' }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

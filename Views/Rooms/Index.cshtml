@@ -1,0 +1,51 @@
+﻿@model List<DormitoryManagementSystem.Models.Room>
+
+@{
+    ViewData["Title"] = "Rooms";
+}
+
+<h2>Rooms</h2>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-octagon-fill"></i> @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Room</a>
+</p>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Room Number</th>
+            <th>Capacity</th>
+            <th>Occupancy</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var studentCount = item.Students?.Count ?? 0;
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.RoomNumber</td>
+                <td>@item.Capacity</td>
+                <td>
+                    <span class="badge @(studentCount >= item.Capacity ? "bg-danger" : "bg-success")">
+                        @studentCount / @item.Capacity
+                    </span>
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

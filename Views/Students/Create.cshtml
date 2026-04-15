@@ -1,0 +1,42 @@
+﻿@model DormitoryManagementSystem.Models.Student
+<h2>Add New Student</h2>
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="Create" method="post">
+
+    <div class="form-group">
+        <label>Full Name</label>
+        <input asp-for="FullName" class="form-control" />
+        <span asp-validation-for="FullName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-2">
+        <label>Student No</label>
+        <input asp-for="StudentNo" class="form-control" />
+        <span asp-validation-for="StudentNo" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-2">
+        <label>Phone</label>
+        <input asp-for="Phone" class="form-control" />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+
+    <div class="form-group mt-2">
+        <label>Room</label>
+        <select asp-for="RoomId" class="form-control" asp-items="ViewBag.RoomId"> 
+            <option value="">-- Select Room --</option>
+        </select>
+        <span asp-validation-for="RoomId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-3">Save</button>
+    <a asp-action="Index" class="btn btn-secondary mt-3">Geri</a>
+</form>
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+
+
+
+
