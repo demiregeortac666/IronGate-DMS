@@ -1,66 +1,231 @@
-# Dormitory Management System (DMS 2026)
+# Dormitory Management System
 
-This project is a comprehensive **SaaS (Software as a Service)** web application developed to simplify the management processes of a student dormitory, track income/expenses, and manage student-room records in a digital environment.
+A modern web-based dormitory management application built with **ASP.NET Core MVC** for managing students, rooms, billing, payments, maintenance workflows, notifications, and administrative operations from a single system.
 
-## 🚀 Technologies
-- **Backend:** C#, ASP.NET Core MVC (8.0/7.0 compatible)
-- **Database:** SQLite & Entity Framework Core (Code-First)
-- **Frontend:** HTML5, CSS3, Bootstrap 5, Chart.js, Bootstrap Icons
-- **Architecture:** Model-View-Controller (MVC)
+## Overview
 
-## 🛠️ How to Run?
-You can use the following steps to build and start the project from scratch:
+Dormitory Management System is designed to simplify day-to-day dormitory operations by providing a centralized interface for accommodation management, student records, room occupancy, financial tracking, maintenance handling, and audit visibility.
 
-1. Open the terminal in the project directory:
-   ```bash
-   dotnet clean
-   dotnet restore
-   dotnet build
-   ```
-2. To create the database from scratch:
-   ```bash
-   dotnet ef database update
-   ```
-3. Run the project:
-   ```bash
-   dotnet run
-   ```
+The application follows a traditional ASP.NET Core MVC architecture and uses **Entity Framework Core** with **SQLite** for persistence.
 
-> **Note:** The system creates an SQLite file named `dormitory.db` by default and populates it with necessary sample data (seed data) on the first run.
+## Features
 
-## 👥 Default Users (For Demo Testing)
-You can log in to the system with the following users. All passwords are: **Admin123!**
-- **Admin Account:** username: `admin` | role: Admin
-- **Staff Account:** username: `staff` | role: Staff
-- **Student Account:** username: `s.yilmaz` | role: Student
+### Accommodation Management
+- Manage rooms and room capacities
+- Track room occupancy
+- Assign students to available rooms
+- Prevent over-capacity room assignments
 
-## ✨ Features
+### Student Management
+- Create, update, view, and remove student records
+- Maintain student profile and accommodation data
+- Support role-specific access to student-related operations
 
-### Admin Features
-- Manage all users and roles.
-- Audit via undeletable log records (Audit Logs).
-- Change system settings.
+### Billing and Payments
+- Generate invoices
+- Record and track payments
+- Monitor paid and unpaid balances
+- Prevent duplicate invoices for the same billing period
+- Prevent overpayment scenarios
 
-### Staff Features
-- Student registration acceptance and room assignment (Capacity controlled).
-- Invoice and Payment processing (Duplicate and overpayment are prevented).
-- Secure upload and hosting of student documents in the system.
+### Maintenance Workflow
+- Create maintenance requests
+- Track request lifecycle with status updates
+- Support staff/admin review and closure process
 
-### Student Features
-- Review own payments and invoice history.
-- Create Maintenance & Repair request.
+### User Access and Security
+- Cookie-based authentication
+- Role-based authorization
+- Admin, Staff, and Student roles
+- User activation/deactivation support
+- Account lockout support
+- Password hashing with BCrypt
 
-### Dashboard & Reports
-- Visualization of dormitory occupancy rate, open/closed general costs using Chart.js bar, doughnut, and line charts.
-- Monthly income analysis, unpaid invoices report, and student debt tables.
+### Monitoring and Administration
+- In-app notifications
+- Audit logging for important actions
+- System settings management
+- Dashboard and summary reporting
 
-## 💡 Additional Enhancements Added
-1. **Data Integrity and Constraints:**
-   - Double invoicing in the same period is prevented.
-   - Payment scenarios exceeding the defined debt (overpayment) are prevented.
-   - Unique constraints are established so that only one system user account can be created per `Student`.
-2. **User Experience:**
-   - Transaction success / failure statuses are reflected on all CRUD pages (Create/Read/Update/Delete) with `TempData` Alert integration.
-   - Clear and concise caught messages are added instead of application crashes in deletion situations throwing errors (E.g.: "Since there are payments belonging to the student, payments must be deleted first.").
-3. **Secure File Management:**
-   - To ensure cybersecurity, true names are masked by generating a `Guid` during file uploads. When a student account is completely deleted, the uploaded physical file on the server is also programmed to be deleted.
+## Tech Stack
+
+- **Framework:** .NET 9
+- **Backend:** ASP.NET Core MVC
+- **Language:** C#
+- **Database:** SQLite
+- **ORM:** Entity Framework Core
+- **Authentication:** Cookie Authentication
+- **Password Security:** BCrypt
+- **Frontend:** Razor Views, Bootstrap, HTML, CSS, JavaScript, Chart.js
+
+## Project Structure
+
+```text
+DormitoryManagementSystem/
+├── Controllers/
+├── Data/
+├── Migrations/
+├── Models/
+├── Services/
+├── Views/
+├── wwwroot/
+├── Program.cs
+└── appsettings.json
+## Directory Notes
+
+- `Controllers/` — MVC controllers and request handling
+- `Data/` — database context and data access configuration
+- `Models/` — domain models and view models
+- `Services/` — business and infrastructure services
+- `Views/` — Razor UI views
+- `Migrations/` — Entity Framework Core migrations
+- `wwwroot/` — static assets such as CSS, JavaScript, and libraries
+
+## Getting Started
+
+### Prerequisites
+
+Make sure the following are installed:
+
+- .NET 9 SDK
+- `dotnet-ef` CLI tool
+
+Install EF Core CLI tools if needed:
+
+```bash
+dotnet tool install --global dotnet-ef
+
+## Installation
+
+Clone the repository:
+
+```bash
+git clone <your-repository-url>
+cd DormitoryManagementSystem
+```
+
+Restore dependencies:
+
+```bash
+dotnet restore
+```
+
+Apply database migrations:
+
+```bash
+dotnet ef database update
+```
+
+Run the application:
+
+```bash
+dotnet run
+```
+
+## Database
+
+The project uses SQLite by default.
+
+When the application starts:
+
+- pending migrations are applied automatically
+- the SQLite database file is created if it does not already exist
+
+Default database file:
+
+```text
+dormitory.db
+```
+
+## Seed Data
+
+In the **Development** environment, the application seeds sample data to make local testing easier.
+
+This may include:
+
+- predefined roles
+- admin user
+- staff user
+- rooms
+- students
+- invoices
+- payments
+- maintenance requests
+- default system settings
+
+## Demo Credentials
+
+Demo users are created in **Development** mode if they do not already exist.
+
+### Available Demo Accounts
+
+- **Admin:** `admin`
+- **Staff:** `staff`
+
+### Password Configuration
+
+Passwords can be configured in `appsettings.json`:
+
+```json
+"SeedUsers": {
+  "AdminPassword": "",
+  "StaffPassword": ""
+}
+```
+
+If these values are left empty, random passwords are generated on first run and written to:
+
+```text
+first-run-credentials.txt
+```
+
+## Configuration
+
+Example configuration:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.EntityFrameworkCore.Database.Command": "Warning"
+    }
+  },
+  "AllowedHosts": "localhost",
+  "SeedUsers": {
+    "AdminPassword": "",
+    "StaffPassword": ""
+  }
+}
+```
+
+## Security
+
+The application includes several baseline security features:
+
+- secure password hashing with BCrypt
+- cookie-based authentication
+- role-based authorization
+- HTTP security header configuration
+- lockout support for accounts
+- protected administrative operations
+
+## Development Notes
+
+- seed data is intended for local development and testing
+- review authentication, cookie settings, and environment configuration before production deployment
+- update connection, hosting, and secret-management strategies for non-local environments
+
+## Possible Future Improvements
+
+- API layer for external integrations
+- Email/SMS notification support
+- Advanced reporting exports
+- Multi-branch or multi-building support
+- Document management module
+- Containerized deployment support
+
+## License
+
+This project is provided for educational and development purposes.
