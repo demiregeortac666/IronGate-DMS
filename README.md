@@ -3,9 +3,16 @@
 ![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
 ![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core_MVC-512BD4?style=for-the-badge&logo=windows-terminal&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
-![Bootstrap](https://img.shields.io/badge/Bootstrap_5-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)
 
-A modern, secure, and role-based **web application** built with **ASP.NET Core MVC 9** for managing students, rooms, billing, payments, maintenance workflows, and administrative operations from a single centralized platform.
+---
+
+## 👥 Project Team (Seng321 - Section 1)
+
+| Full Name | Student ID |
+| :--- | :--- |
+| **İsmail Girayhan DURMUŞ** | 210208010 |
+| **Demir Ege ORTAÇ** | 230208045 |
+| **Yunus Emre VAROL** | 230208028 |
 
 ---
 
@@ -23,9 +30,7 @@ A modern, secure, and role-based **web application** built with **ASP.NET Core M
 
 ## 📖 Overview
 
-The **IronGate Dormitory Management System (DMS 2026)** is designed to streamline university dormitory operations. It replaces manual, paper-based processes for room allocation, invoice generation, maintenance handling, and administrative monitoring with an integrated, secure web-based system. 
-
-The platform strictly enforces role-based access control, includes advanced security measures like brute-force lockout, and provides real-time dashboard analytics for administrators.
+The **IronGate Dormitory Management System (DMS 2026)** is designed to streamline university dormitory operations. It replaces manual, paper-based processes for room allocation, invoice generation, maintenance handling, and administrative monitoring with an integrated, secure web-based system built with **ASP.NET Core MVC 9**.
 
 ---
 
@@ -48,7 +53,7 @@ The platform strictly enforces role-based access control, includes advanced secu
 
 ### 📊 Monitoring & Administration
 - **Dashboard Analytics:** Visual KPI cards and dynamic charts (powered by Chart.js) for an instant operational overview.
-- **Audit Logging:** Detailed traceability for all major system actions, including IP tracking for auth events.
+- **Audit Logging:** Detailed traceability for bmajor system actions, including IP tracking for auth events.
 - **Reporting:** Exportable statistical reports for occupancy, finances, and student balances.
 
 ---
@@ -73,16 +78,13 @@ IronGate DMS is built with a strictly **"Security-First"** approach:
 - **Database:** SQLite
 - **Frontend:** HTML5, CSS3, JavaScript, Bootstrap 5, Razor Views
 - **Data Visualization:** Chart.js
-- **Security:** BCrypt
 
 ---
 
 ## 🚀 Getting Started / Installation
 
-Follow these instructions to set up and run the system on your local machine.
-
 ### Prerequisites
-- **.NET 9.0 SDK** (Ensure you use the ARM64 version for Apple Silicon or x64 for Intel/Windows).
+- **.NET 9.0 SDK** (ARM64 for Apple Silicon or x64 for Intel/Windows).
 - **IDE:** JetBrains Rider, Visual Studio 2022, or VS Code.
 - **EF Core CLI Tools:** Required for database migrations.
 
