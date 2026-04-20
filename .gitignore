@@ -3,6 +3,13 @@
 *.user
 *.suo
 
+# First-run credential file — never commit
+first-run-credentials.txt
+
+# Delivery artifacts
+*.zip
+*.rar
+
 # Build results
 bin/
 obj/

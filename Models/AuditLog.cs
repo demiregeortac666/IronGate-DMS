@@ -19,7 +19,7 @@ namespace DormitoryManagementSystem.Models
 
         public int? EntityId { get; set; }
 
-        public DateTime Timestamp { get; set; } = DateTime.Now;
+        public DateTime Timestamp { get; set; } = DormitoryManagementSystem.SystemTime.Now;
 
         [StringLength(500)]
         public string? Details { get; set; }

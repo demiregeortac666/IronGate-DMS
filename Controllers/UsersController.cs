@@ -34,8 +34,12 @@ namespace DormitoryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(User user, string password)
         {
-            if (string.IsNullOrEmpty(password))
-                ModelState.AddModelError("", "Password is required.");
+            ModelState.Remove("PasswordHash");
+            ModelState.Remove("Role");
+            ModelState.Remove("Student");
+
+            if (!ValidatePasswordStrength(password, out var pwError))
+                ModelState.AddModelError("", pwError);
 
             if (_context.Users.Any(u => u.Username == user.Username))
                 ModelState.AddModelError("", "Username already exists.");
@@ -81,8 +85,7 @@ namespace DormitoryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(User user, string? newPassword)
         {
-            // PasswordHash is [Required] on the model but not submitted by the form,
-            // so we remove it from validation — the controller handles it explicitly.
+            // PasswordHash is [Required] on the model but not submitted by the form.
             ModelState.Remove("PasswordHash");
 
             if (user.RoleId == _context.Roles.FirstOrDefault(r => r.RoleName == "Student")?.Id && !user.StudentId.HasValue)
@@ -90,6 +93,9 @@ namespace DormitoryManagementSystem.Controllers
 
             if (user.StudentId.HasValue && _context.Users.Any(u => u.StudentId == user.StudentId && u.Id != user.Id))
                 ModelState.AddModelError("StudentId", "A user account has already been created for this student.");
+
+            if (!string.IsNullOrEmpty(newPassword) && !ValidatePasswordStrength(newPassword, out var pwError))
+                ModelState.AddModelError("", pwError);
 
             if (!ModelState.IsValid)
             {
@@ -103,11 +109,11 @@ namespace DormitoryManagementSystem.Controllers
 
             try
             {
-                existing.FullName = user.FullName;
-                existing.Email = user.Email;
-                existing.RoleId = user.RoleId;
+                existing.FullName  = user.FullName;
+                existing.Email     = user.Email;
+                existing.RoleId    = user.RoleId;
                 existing.StudentId = user.StudentId;
-                existing.IsActive = user.IsActive;
+                existing.IsActive  = user.IsActive;
 
                 if (!string.IsNullOrEmpty(newPassword))
                     existing.PasswordHash = BCrypt.Net.BCrypt.HashPassword(newPassword);
@@ -148,7 +154,7 @@ namespace DormitoryManagementSystem.Controllers
 
             if (user.Role?.RoleName == "Admin")
             {
-                var adminCount = _context.Users.Count(u => u.Role.RoleName == "Admin");
+                var adminCount = _context.Users.Count(u => u.Role != null && u.Role.RoleName == "Admin");
                 if (adminCount <= 1)
                 {
                     TempData["Error"] = "Cannot delete the last admin account.";
@@ -167,6 +173,33 @@ namespace DormitoryManagementSystem.Controllers
                 TempData["Error"] = "User could not be deleted. There may be related data.";
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        // Password must be ≥12 chars, contain at least one uppercase letter and one digit.
+        private static bool ValidatePasswordStrength(string? password, out string error)
+        {
+            error = "";
+            if (string.IsNullOrEmpty(password))
+            {
+                error = "Password is required.";
+                return false;
+            }
+            if (password.Length < 12)
+            {
+                error = "Password must be at least 12 characters.";
+                return false;
+            }
+            if (!password.Any(char.IsUpper))
+            {
+                error = "Password must contain at least one uppercase letter.";
+                return false;
+            }
+            if (!password.Any(char.IsDigit))
+            {
+                error = "Password must contain at least one digit.";
+                return false;
+            }
+            return true;
         }
     }
 }

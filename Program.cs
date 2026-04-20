@@ -13,6 +13,8 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions
 });
 
 var dbPath = Path.Combine(builder.Environment.ContentRootPath, "dormitory.db");
+var adminSeedPassword = builder.Configuration["SeedUsers:AdminPassword"];
+var staffSeedPassword = builder.Configuration["SeedUsers:StaffPassword"];
 
 // 1. DATABASE CONNECTION
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -22,8 +24,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
-        options.LoginPath = "/Account/Login";
+        options.LoginPath        = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
+
+        // Session expires after 8 hours of inactivity.
+        options.ExpireTimeSpan    = TimeSpan.FromHours(8);
+        options.SlidingExpiration = true;
+
+        // Prevent cookie access from JavaScript and enforce HTTPS.
+        options.Cookie.HttpOnly     = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite     = SameSiteMode.Strict;
+        options.Cookie.Name         = "DMS.Auth";
     });
 
 // --- 3. AUDIT LOGGING AND SERVICE REGISTRATION ---
@@ -65,10 +77,17 @@ using (var scope = app.Services.CreateScope())
     {
         var adminRole = db.Roles.First(r => r.RoleName == "Admin");
 
+        if (string.IsNullOrWhiteSpace(adminSeedPassword))
+        {
+            adminSeedPassword = GenerateSeedPassword();
+            var credFile = Path.Combine(builder.Environment.ContentRootPath, "first-run-credentials.txt");
+            System.IO.File.AppendAllText(credFile, $"[{DormitoryManagementSystem.SystemTime.Now:u}] Admin seed password: {adminSeedPassword}{Environment.NewLine}");
+        }
+
         db.Users.Add(new User
         {
             Username = "admin",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("admin123"),
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(adminSeedPassword),
             FullName = "System Administrator",
             Email = "admin@dorm.com",
             RoleId = adminRole.Id,
@@ -83,7 +102,7 @@ using (var scope = app.Services.CreateScope())
         db.Settings.AddRange(
             new Setting { Key = "DefaultMonthlyFee", Value = "3500" },
             new Setting { Key = "LatePenaltyRate", Value = "0.05" },
-            new Setting { Key = "PenaltyGraceDays", Value = "7" }
+            new Setting { Key = "PenaltyGraceDays", Value = "0" }
         );
         db.SaveChanges();
     }
@@ -105,7 +124,7 @@ using (var scope = app.Services.CreateScope())
         // Students — A101 has 4 students (FULL), A102 has 2, B201 has 1
         var students = new[]
         {
-            new Student { FullName = "Ali Yilmaz",     StudentNo = "210201001", Phone = "555-111-0001", RoomId = rooms[0].Id },
+            new Student { FullName = "Ali Yilmaz",     StudentNo = "210201001", Phone = "5393015203", RoomId = rooms[0].Id },
             new Student { FullName = "Ayse Demir",     StudentNo = "210201002", Phone = "555-111-0002", RoomId = rooms[0].Id },
             new Student { FullName = "Mehmet Kaya",    StudentNo = "220201003", Phone = "555-111-0003", RoomId = rooms[0].Id },
             new Student { FullName = "Fatma Celik",    StudentNo = "220201004", Phone = "555-111-0004", RoomId = rooms[0].Id },
@@ -141,18 +160,26 @@ using (var scope = app.Services.CreateScope())
 
         // Maintenance Requests — all 3 statuses for workflow demo
         db.MaintenanceRequests.AddRange(
-            new MaintenanceRequest { RoomId = rooms[0].Id, StudentId = students[0].Id, Description = "Faucet is leaking in the bathroom", Status = "Open", CreatedAt = DateTime.Now.AddDays(-3) },
-            new MaintenanceRequest { RoomId = rooms[1].Id, StudentId = students[4].Id, Description = "Window lock is broken", Status = "Approved", ApprovedBy = "admin", ApprovedAt = DateTime.Now.AddDays(-1), CreatedAt = DateTime.Now.AddDays(-5) },
-            new MaintenanceRequest { RoomId = rooms[2].Id, StudentId = students[6].Id, Description = "Heating is not working", Status = "Closed", ApprovedBy = "admin", ApprovedAt = DateTime.Now.AddDays(-7), CreatedAt = DateTime.Now.AddDays(-10), ClosedAt = DateTime.Now.AddDays(-6) }
+            new MaintenanceRequest { RoomId = rooms[0].Id, StudentId = students[0].Id, Description = "Faucet is leaking in the bathroom", Status = "Open", CreatedAt = DormitoryManagementSystem.SystemTime.Now.AddDays(-3) },
+            new MaintenanceRequest { RoomId = rooms[1].Id, StudentId = students[4].Id, Description = "Window lock is broken", Status = "Approved", ApprovedBy = "admin", ApprovedAt = DormitoryManagementSystem.SystemTime.Now.AddDays(-1), CreatedAt = DormitoryManagementSystem.SystemTime.Now.AddDays(-5) },
+            new MaintenanceRequest { RoomId = rooms[2].Id, StudentId = students[6].Id, Description = "Heating is not working", Status = "Closed", ApprovedBy = "admin", ApprovedAt = DormitoryManagementSystem.SystemTime.Now.AddDays(-7), CreatedAt = DormitoryManagementSystem.SystemTime.Now.AddDays(-10), ClosedAt = DormitoryManagementSystem.SystemTime.Now.AddDays(-6) }
         );
         db.SaveChanges();
 
         // Staff user for demo
         var staffRole = db.Roles.First(r => r.RoleName == "Staff");
+
+        if (string.IsNullOrWhiteSpace(staffSeedPassword))
+        {
+            staffSeedPassword = GenerateSeedPassword();
+            var credFile = Path.Combine(builder.Environment.ContentRootPath, "first-run-credentials.txt");
+            System.IO.File.AppendAllText(credFile, $"[{DormitoryManagementSystem.SystemTime.Now:u}] Staff seed password: {staffSeedPassword}{Environment.NewLine}");
+        }
+
         db.Users.Add(new User
         {
             Username = "staff",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword("staff123"),
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(staffSeedPassword),
             FullName = "Dormitory Staff",
             Email = "staff@dorm.com",
             RoleId = staffRole.Id,
@@ -169,7 +196,27 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// 5. MIDDLEWARE PIPELINE
+// 5. SECURITY RESPONSE HEADERS
+// Applied before static files so every response (including CSS/JS) carries the headers.
+app.Use(async (context, next) =>
+{
+    var headers = context.Response.Headers;
+    headers["X-Content-Type-Options"] = "nosniff";
+    headers["X-Frame-Options"]        = "DENY";
+    headers["Referrer-Policy"]        = "no-referrer";
+    headers["Permissions-Policy"]     = "geolocation=(), microphone=(), camera=()";
+    // Permissive CSP: tighten after all inline scripts/styles are reviewed.
+    headers["Content-Security-Policy"] =
+        "default-src 'self'; " +
+        "script-src 'self' 'unsafe-inline'; " +
+        "style-src 'self' 'unsafe-inline' cdn.jsdelivr.net; " +
+        "font-src 'self' cdn.jsdelivr.net data:; " +
+        "img-src 'self' data:; " +
+        "frame-ancestors 'none';";
+    await next();
+});
+
+// 6. MIDDLEWARE PIPELINE
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
@@ -202,4 +249,9 @@ static string ResolveContentRoot()
     }
 
     return Directory.GetCurrentDirectory();
+}
+
+static string GenerateSeedPassword()
+{
+    return $"Dev!{Guid.NewGuid():N}"[..16];
 }

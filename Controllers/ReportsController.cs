@@ -35,6 +35,7 @@ namespace DormitoryManagementSystem.Controllers
                 .ToList();
 
             _audit.Log("View", "Report", null, "Viewed room occupancy report.");
+            _context.SaveChanges();
 
             return View(report);
         }
@@ -54,6 +55,7 @@ namespace DormitoryManagementSystem.Controllers
             };
 
             _audit.Log("View", "Report", null, "Viewed finance summary report.");
+            _context.SaveChanges();
 
             return View(vm);
         }
@@ -80,6 +82,7 @@ namespace DormitoryManagementSystem.Controllers
                 .ToList();
 
             _audit.Log("View", "Report", null, "Viewed unpaid invoices report.");
+            _context.SaveChanges();
 
             return View(report);
         }
@@ -106,6 +109,7 @@ namespace DormitoryManagementSystem.Controllers
                 .ToList();
 
             _audit.Log("View", "Report", null, "Viewed monthly payments report.");
+            _context.SaveChanges();
 
             return View(report);
         }
@@ -130,6 +134,7 @@ namespace DormitoryManagementSystem.Controllers
                 .ToList();
 
             _audit.Log("View", "Report", null, "Viewed student balance report.");
+            _context.SaveChanges();
 
             return View(report);
         }

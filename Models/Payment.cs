@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace DormitoryManagementSystem.Models
@@ -15,7 +15,7 @@ namespace DormitoryManagementSystem.Models
         [Range(0.01, 1000000)]
         public decimal Amount { get; set; }
 
-        public DateTime PaidAt { get; set; } = DateTime.Now;
+        public DateTime PaidAt { get; set; } = DormitoryManagementSystem.SystemTime.UtcNow;
 
         [StringLength(30)]
         public string? Method { get; set; }

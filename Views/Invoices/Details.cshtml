@@ -16,7 +16,7 @@
             <div class="card shadow-sm h-100 border-primary">
                 <div class="card-body text-center">
                     <h6 class="text-muted text-uppercase mb-2">Invoice Amount</h6>
-                    <h3 class="mb-0 text-dark">@Model.Invoice.Amount.ToString("C")</h3>
+                    <h3 class="mb-0">@Model.Invoice.Amount.ToString("C")</h3>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@
 
     @* Student and invoice information *@
     <div class="card shadow-sm mb-4">
-        <div class="card-header bg-light fw-bold">Genel Bilgiler</div>
+        <div class="card-header fw-bold">Genel Bilgiler</div>
         <div class="card-body">
             <div class="row">
                 <div class="col-sm-6">
@@ -52,7 +52,7 @@
                     <p><strong>Due Date:</strong> @Model.Invoice.DueDate.ToShortDateString()</p>
                     <p>
                         <strong>Status:</strong>
-                        <span class="badge @(Model.Invoice.Status == "Paid" ? "bg-success" : "bg-warning text-dark")">
+                        <span class="badge @(Model.Invoice.Status == "Paid" ? "bg-success" : "bg-warning")">
                             @Model.Invoice.Status
                         </span>
                     </p>
@@ -68,7 +68,7 @@
         {
             <div class="table-responsive">
                 <table class="table table-hover table-striped mb-0">
-                    <thead class="table-light">
+                    <thead>
                         <tr>
                             <th>Payment Date</th>
                             <th>Amount</th>

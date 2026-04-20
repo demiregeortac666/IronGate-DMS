@@ -44,10 +44,8 @@ namespace DormitoryManagementSystem.Controllers
                 try
                 {
                     _context.Settings.Add(setting);
-                    _context.SaveChanges();
-
-                    // LOG: Setting created
                     _audit.Log("Create", "Setting", setting.Id, $"Created setting: {setting.Key}");
+                    _context.SaveChanges();
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -77,10 +75,8 @@ namespace DormitoryManagementSystem.Controllers
                 try
                 {
                     _context.Settings.Update(setting);
-                    _context.SaveChanges();
-
-                    // LOG: Setting updated
                     _audit.Log("Update", "Setting", setting.Id, $"Updated setting: {setting.Key}");
+                    _context.SaveChanges();
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -102,10 +98,8 @@ namespace DormitoryManagementSystem.Controllers
             {
                 string keyName = s.Key;
                 _context.Settings.Remove(s);
-                _context.SaveChanges();
-
-                // LOG: Setting deleted
                 _audit.Log("Delete", "Setting", id, $"Deleted setting: {keyName}");
+                _context.SaveChanges();
             }
             return RedirectToAction(nameof(Index));
         }
@@ -120,7 +114,7 @@ namespace DormitoryManagementSystem.Controllers
                 return NotFound("Database file not found.");
 
             // Build a dated backup file name (e.g. dormitory_backup_20260407.db)
-            var backupName = $"dormitory_backup_{DateTime.Now:yyyyMMdd_HHmmss}.db";
+            var backupName = $"dormitory_backup_{DormitoryManagementSystem.SystemTime.Now:yyyyMMdd_HHmmss}.db";
 
             // Read the file securely even if it is locked by the database process
             byte[] bytes;
@@ -135,6 +129,7 @@ namespace DormitoryManagementSystem.Controllers
 
             // LOG: Database backup downloaded
             _audit.Log("Backup", "System", null, "Database backup downloaded.");
+            _context.SaveChanges();
 
             return File(bytes, "application/octet-stream", backupName);
         }

@@ -15,7 +15,7 @@
             <tr>
                 <td>@log.Timestamp.ToString("dd.MM.yyyy HH:mm:ss")</td>
                 <td>@(log.User?.FullName ?? "System")</td>
-                <td><span class="badge @(log.Action == "Create" ? "bg-success" : log.Action == "Delete" ? "bg-danger" : "bg-warning text-dark")">@log.Action</span></td>
+                <td><span class="badge @(log.Action == "Create" ? "bg-success" : log.Action == "Delete" ? "bg-danger" : "bg-warning")">@log.Action</span></td>
                 <td>@log.EntityName</td>
                 <td>@log.EntityId</td>
                 <td>@(log.Details ?? "-")</td>

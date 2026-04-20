@@ -16,7 +16,6 @@ namespace DormitoryManagementSystem.Data
         public DbSet<MaintenanceRequest> MaintenanceRequests { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
-        public DbSet<Document> Documents { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<Setting> Settings { get; set; }

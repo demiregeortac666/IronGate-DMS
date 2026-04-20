@@ -45,9 +45,8 @@ namespace DormitoryManagementSystem.Controllers
                 try
                 {
                     _context.Rooms.Add(room);
-                    _context.SaveChanges();
-
                     _audit.Log("Create", "Room", room.Id, $"Created room: {room.RoomNumber}");
+                    _context.SaveChanges();
 
                     TempData["Success"] = "Room successfully created.";
                     return RedirectToAction(nameof(Index));
@@ -85,9 +84,8 @@ namespace DormitoryManagementSystem.Controllers
                 try
                 {
                     _context.Rooms.Update(room);
-                    _context.SaveChanges();
-
                     _audit.Log("Update", "Room", room.Id, $"Updated room: {room.RoomNumber}");
+                    _context.SaveChanges();
 
                     TempData["Success"] = "Room successfully updated.";
                     return RedirectToAction(nameof(Index));
@@ -129,9 +127,8 @@ namespace DormitoryManagementSystem.Controllers
                 string roomNumber = room.RoomNumber;
 
                 _context.Rooms.Remove(room);
-                _context.SaveChanges();
-
                 _audit.Log("Delete", "Room", id, $"Deleted room: {roomNumber}");
+                _context.SaveChanges();
 
                 TempData["Success"] = "Room successfully deleted.";
             }

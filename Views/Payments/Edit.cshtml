@@ -1,43 +1,53 @@
-﻿@model DormitoryManagementSystem.Models.Payment
+@model DormitoryManagementSystem.Models.Payment
 
-<h2>Edit Payment</h2>
+@{
+    ViewData["Title"] = "Edit Payment";
+}
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<h2>Edit Payment #@Model.Id</h2>
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
+@if (!ViewData.ModelState.IsValid)
+{
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+}
 
-    <div class="form-group">
-        <label>Invoice</label>
-        <select asp-for="InvoiceId" class="form-control" asp-items="ViewBag.InvoiceId">
-            <option value="">-- Select Invoice --</option>
-        </select>
-        <span asp-validation-for="InvoiceId" class="text-danger"></span>
+@* POST to /Payments/Edit/{id}. Only Amount, Method, and ReceiptNo are editable.
+   InvoiceId and PaidAt are immutable after creation and shown as read-only. *@
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Invoice</label>
+        <input class="form-control" value="Invoice #@Model.InvoiceId" readonly disabled />
+        <small class="text-muted">Invoice cannot be changed after payment creation.</small>
     </div>
 
-    <div class="form-group mt-2">
-        <label>Amount</label>
-        <input asp-for="Amount" class="form-control" type="number" step="0.01" />
-        <span asp-validation-for="Amount" class="text-danger"></span>
+    <div class="mb-3">
+        <label class="form-label">Paid At</label>
+        <input class="form-control" value="@Model.PaidAt.ToString("dd.MM.yyyy HH:mm")" readonly disabled />
+        <small class="text-muted">Payment date cannot be changed.</small>
     </div>
 
-    <div class="form-group mt-2">
-        <label>Paid At</label>
-        <input asp-for="PaidAt" class="form-control" type="datetime-local" />
+    <div class="mb-3">
+        <label class="form-label">Amount</label>
+        <input type="number" name="amount" class="form-control"
+               value="@Model.Amount" step="0.01" min="0.01" required />
     </div>
 
-    <div class="form-group mt-2">
-        <label>Method</label>
-        <input asp-for="Method" class="form-control" placeholder="Cash / Card / Transfer" />
+    <div class="mb-3">
+        <label class="form-label">Method</label>
+        <input type="text" name="method" class="form-control"
+               value="@Model.Method" placeholder="Cash / Card / Transfer" maxlength="30" />
     </div>
 
-    <div class="form-group mt-2">
-        <label>Receipt No</label>
-        <input asp-for="ReceiptNo" class="form-control" />
+    <div class="mb-3">
+        <label class="form-label">Receipt No</label>
+        <input type="text" name="receiptNo" class="form-control"
+               value="@Model.ReceiptNo" maxlength="50" />
     </div>
 
-    <button type="submit" class="btn btn-success mt-3">Save</button>
-    <a asp-action="Index" class="btn btn-secondary mt-3">Geri</a>
+    <button type="submit" class="btn btn-success mt-2">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary mt-2">Back</a>
 </form>
 
 @section Scripts {

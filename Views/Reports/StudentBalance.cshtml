@@ -1,4 +1,4 @@
-﻿@model List<DormitoryManagementSystem.Models.Reports.StudentBalanceVM>
+@model List<DormitoryManagementSystem.Models.Reports.StudentBalanceVM>
 
 @{
     ViewData["Title"] = "Student Balance";
@@ -6,7 +6,7 @@
 
 <h2>Student Balance</h2>
 
-<table class="table table-bordered table-striped">
+<table class="table table-bordered table-striped report-table">
     <thead class="table-dark">
         <tr>
             <th>Student</th>
@@ -19,7 +19,7 @@
     <tbody>
         @foreach (var item in Model)
         {
-            <tr class="@(item.Balance > 0 ? "table-warning" : item.Balance == 0 ? "table-success" : "")">
+            <tr>
                 <td>@item.StudentName</td>
                 <td>@item.StudentNo</td>
                 <td>@item.TotalInvoiced.ToString("C")</td>

@@ -21,9 +21,14 @@
 </form>
 <h2>Invoices</h2>
 
-<p>
+<div class="mb-3 d-flex gap-2">
     <a asp-action="Create" class="btn btn-primary">New Invoice</a>
-</p>
+    <form asp-action="ApplyLatePenalties" method="post" class="d-inline">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="status" value="@ViewBag.Status" />
+        <button type="submit" class="btn btn-outline-danger">Apply Late Penalties</button>
+    </form>
+</div>
 
 <table class="table table-bordered">
     <thead>

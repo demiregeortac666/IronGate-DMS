@@ -1,47 +1,53 @@
-﻿@model DormitoryManagementSystem.Models.Invoice
+@model DormitoryManagementSystem.Models.Invoice
 
-<h2>Edit Invoice</h2>
+@{
+    ViewData["Title"] = "Edit Invoice";
+}
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<h2>Edit Invoice #@Model.Id</h2>
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
+@if (!ViewData.ModelState.IsValid)
+{
+    <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+}
 
-    <div class="form-group">
-        <label>Student</label>
-        <select asp-for="StudentId" class="form-control" asp-items="ViewBag.StudentId"></select>
-        <span asp-validation-for="StudentId" class="text-danger"></span>
+@* POST to /Invoices/Edit/{id} with only the three editable fields.
+   StudentId is immutable after creation and displayed as plain text.
+   Status and PenaltyAmount are system-managed and not editable here. *@
+<form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Student</label>
+        <input class="form-control" value="@Model.Student?.FullName" readonly disabled />
     </div>
 
-    <div class="form-group mt-2">
-        <label>Period (YYYY-MM)</label>
-        <input asp-for="PeriodMonth" class="form-control" />
-        <span asp-validation-for="PeriodMonth" class="text-danger"></span>
+    <div class="mb-3">
+        <label class="form-label">Period (YYYY-MM)</label>
+        <input type="text" name="periodMonth" class="form-control"
+               value="@Model.PeriodMonth" placeholder="2026-04" maxlength="7" required />
     </div>
 
-    <div class="form-group mt-2">
-        <label>Amount</label>
-        <input asp-for="Amount" class="form-control" type="number" step="0.01" />
-        <span asp-validation-for="Amount" class="text-danger"></span>
+    <div class="mb-3">
+        <label class="form-label">Amount</label>
+        <input type="number" name="amount" class="form-control"
+               value="@Model.Amount" step="0.01" min="0.01" required />
     </div>
 
-    <div class="form-group mt-2">
-        <label>Due Date</label>
-        <input asp-for="DueDate" class="form-control" type="date" />
-        <span asp-validation-for="DueDate" class="text-danger"></span>
+    <div class="mb-3">
+        <label class="form-label">Due Date</label>
+        <input type="date" name="dueDate" class="form-control"
+               value="@Model.DueDate.ToString("yyyy-MM-dd")" required />
     </div>
 
-    <div class="form-group mt-2">
-        <label>Status</label>
-        <select asp-for="Status" class="form-control">
-            <option>Unpaid</option>
-            <option>Paid</option>
-        </select>
-        <span asp-validation-for="Status" class="text-danger"></span>
+    <div class="mb-3">
+        <label class="form-label">Status</label>
+        <input class="form-control" value="@Model.Status (system-managed)" readonly disabled />
+        <small class="text-muted">Status is automatically derived from payments.</small>
     </div>
 
-    <button type="submit" class="btn btn-success mt-3">Save</button>
-    <a asp-action="Index" class="btn btn-secondary mt-3">Back</a>
+    <button type="submit" class="btn btn-success mt-2">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary mt-2">Back</a>
 </form>
 
 @section Scripts {

@@ -26,7 +26,7 @@ namespace DormitoryManagementSystem.Services
             {
                 UserId = userId,
                 Message = message,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DormitoryManagementSystem.SystemTime.Now,
                 IsRead = false
             };
             _context.Notifications.Add(notification);

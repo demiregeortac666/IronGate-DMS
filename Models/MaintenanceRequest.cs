@@ -26,7 +26,7 @@ namespace DormitoryManagementSystem.Models
         [StringLength(20)]
         public string Status { get; set; } = "Open";
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DormitoryManagementSystem.SystemTime.Now;
 
         public DateTime? ClosedAt { get; set; }
 
